@@ -15,6 +15,21 @@ from .error import Error
 @click.option('-u', '--user', 'username')
 @click.option('-p', '--pass', 'password')
 def cli(username, password):
+  """
+    Commands for managing JBS timesheets.
+
+    In general, any place a timesheet date is called for, you can use any date
+    that is covered by that timesheet. So a timesheet for Sunday, July 20th
+    would accept any date from 7/14 to 7/20. And "current" and "today" are
+    synonyms for the current date.
+
+    You can specify a username and password by creating a
+    "~/.jbstime/config.yaml" file with a username and password entry, or by
+    creating JBS_TIMESHEET_USER and JBS_TIMESHEET_PASS environmental
+    variables, or by using the --user and --pass options. If all else fails,
+    you will be prompted to enter them on the command line.
+  """
+
   config = load_config()
 
   username = username or config['username']
@@ -36,6 +51,13 @@ def cli(username, password):
 @click.argument('hours')
 @click.argument('description')
 def add(date, project, hours, description):
+  """
+    Adds an entry to a timesheet.
+
+    DATE is the date of the entry. This will automatically select the correct
+    timesheet.
+  """
+
   timesheet = Timesheet.from_user_date(date)
   date = date_from_user_date(date)
   timesheet.add_item(date, project, hours, description)
@@ -47,6 +69,15 @@ def add(date, project, hours, description):
 @click.argument('hours')
 @click.argument('description')
 def addall(date, project, hours, description):
+  """
+    Adds an entry to every workday on a timesheet. Useful for quickly filling
+    out duplicate entries.
+
+    DATE is the date of the timesheet. In the event that any of the days
+    overlap with JBS holidays, you will be prompted with an option to fill
+    those out with paid holiday time instead.
+  """
+
   timesheet = Timesheet.from_user_date(date)
 
   set_holidays = False
@@ -85,8 +116,20 @@ def addall(date, project, hours, description):
 @click.argument('date')
 @click.argument('project')
 @click.argument('description', required=False)
-@click.option('--all', is_flag=True)
+@click.option('--all', is_flag=True, help='Apply to all days on the timesheet')
 def delete(date, project, description, all):
+  """
+    Deletes an entry or entries from a timesheet.
+
+    DATE is the date of the entry, or if the --all flag is specified, the date
+    of the timesheet. This will match everything with a specific project (and
+    description, if that is specified). You can use "all" as the project name,
+    in which case it will match all projects.
+
+    You will be prompted with the number of affected entries and given a chance
+    to confirm the deletion.
+  """
+
   timesheet = Timesheet.from_user_date(date)
   item_date = None if all else date_from_user_date(date)
   project = project.lower()
@@ -119,8 +162,14 @@ def delete(date, project, description, all):
 
 
 @cli.command()
-@click.argument('date', default='today')
+@click.argument('date', default='current')
 def create(date):
+  """
+    Creates a timesheet.
+
+    If DATE is not specified, uses the current date.
+  """
+
   date = date_from_user_date(date)
   timesheet_date = find_sunday(date)
   timesheet_id = Timesheet.create(timesheet_date)
@@ -128,8 +177,14 @@ def create(date):
 
 
 @cli.command()
-@click.argument('date', default='today')
+@click.argument('date', default='current')
 def submit(date):
+  """
+    Submits a timesheet.
+
+    This will warn you if there are fewer than 40 hours recorded. Timesheets
+    cannot be edited after they've been submitted.
+  """
   timesheet = Timesheet.from_user_date(date)
   if timesheet.locked:
     click.echo(f'The timesheet for {date_fmt(timesheet.date)} has already been submitted', err=True)
@@ -153,6 +208,10 @@ def submit(date):
 @cli.command()
 @click.option('--limit', default='5', show_default=True, help='Number to show, or "all"')
 def timesheets(limit):
+  """
+    Lists existing timesheets, most recent first.
+  """
+
   dates = Timesheet.list()
   if limit == 'all':
     limit = len(dates)
@@ -173,8 +232,16 @@ def timesheets(limit):
 
 @cli.command()
 @click.argument('search', required=False)
-@click.option('--all', is_flag=True)
+@click.option('--all', is_flag=True, help='Include non-favorited projects')
 def projects(search, all):
+  """
+    Lists projects.
+
+    If SEARCH is specified, this will only list projects which include the
+    search string (case-insensitive). By default, this only lists projects
+    you have favorited.
+  """
+
   if search:
     search = search.lower()
 
@@ -188,6 +255,9 @@ def projects(search, all):
 
 @cli.command()
 def holidays():
+  """
+    Lists JBS holidays.
+  """
   for date, holiday in list_holidays().items():
     click.echo(f'{date_fmt_pad_day(date)}: {holiday}')
 
@@ -195,6 +265,11 @@ def holidays():
 @cli.command()
 @click.argument('date', default='latest')
 def timesheet(date):
+  """
+    Show the specified timesheet.
+
+    If DATE is not specified, this shows the latest timesheet.
+  """
   if date == 'latest':
     timesheet = Timesheet.latest()
   else:

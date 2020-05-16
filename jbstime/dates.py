@@ -16,7 +16,8 @@ def date_fmt_pad_day(d):
 
 
 def date_from_user_date(date):
-  if date == 'today':
+  lower_date = date.lower()
+  if lower_date in ('today', 'current'):
     return datetime.now().date()
 
   try:
