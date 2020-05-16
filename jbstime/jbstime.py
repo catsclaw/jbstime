@@ -8,7 +8,6 @@ from bs4 import BeautifulSoup
 import click
 from dateutil.parser import parse
 from dateutil.parser._parser import ParserError
-import requests
 
 from . import req
 from .timesheet import Timesheet
@@ -42,28 +41,6 @@ def login(username, password):
     return False
 
   return True
-
-
-def list_timesheets():
-  r = req.get('/?all=1')
-
-  doc = BeautifulSoup(r.text, 'html.parser')
-  dates = {}
-  for row in doc.find('table', attrs={'class': 'latest-timesheet-table'}).find_all('tr'):
-    data = row.find_all('td')
-    if not data:
-      continue
-
-    timesheet_date = datetime.strptime(data[1].contents[0][12:], '%m/%d/%Y').date()
-    dates[timesheet_date] = Timesheet(
-      data[5].find('a')['href'][11:-1],
-      timesheet_date,
-      float(data[2].contents[0]),
-      float(data[3].contents[0]),
-      (data[0].find('span')['class'] + [None])[0]  == 'locked',
-    )
-
-  return dates
 
 
 TimesheetItem = namedtuple('TimesheetItem', 'id hours date project description')
@@ -112,7 +89,7 @@ def create_new_sheet(date):
 
 
 def get_latest_timesheet():
-  timesheets = list_timesheets()
+  timesheets = Timesheet.list()
   if not timesheets:
     click.echo('No timesheets found', err=True)
     sys.exit(Error.TIMESHEET_MISSING)
@@ -141,7 +118,7 @@ def timesheet_from_user_date(date):
     click.echo(f'Can\'t parse date: {data[0]}', err=True)
     sys.exit(Error.UNPARSABLE_DATE)
 
-  timesheets = list_timesheets()
+  timesheets = Timesheet.list()
   if not timesheets:
     click.echo('No timesheets found', err=True)
     sys.exit(Error.TIMESHEET_MISSING)
@@ -299,7 +276,7 @@ def create(date):
 @cli.command()
 @click.option('--limit', default='5', show_default=True, help='Number to show, or "all"')
 def timesheets(limit):
-  dates = list_timesheets()
+  dates = Timesheet.list()
   if limit == 'all':
     limit = len(dates)
   else:
