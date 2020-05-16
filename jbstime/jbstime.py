@@ -10,42 +10,15 @@ from dateutil.parser import parse
 from dateutil.parser._parser import ParserError
 import requests
 
+from . import req
+from .timesheet import Timesheet
+
 
 class Error(IntEnum):
   INVALID_ARGUMENT = 1
   TIMESHEET_MISSING = 2
   UNPARSABLE_DATE = 3
   TIMESHEET_EXISTS = 4
-
-s = requests.Session()
-
-
-def _get(url, *args, **kw):
-  url = 'https://timetrack.jbecker.com' + url
-  r = s.get(url, *args, **kw)
-  r.raise_for_status()
-  return r
-
-
-def _post(url, data, *args, referer=None, xhr=False, **kw):
-  referer = referer or url
-  r = _get(referer)
-  csrf_token = r.cookies['csrftoken']
-
-  data['csrf_token'] = csrf_token
-  data['csrfmiddlewaretoken'] = csrf_token
-  kw['headers'] = {
-    'X-CSRFToken': csrf_token,
-    'Referer': 'https://timetrack.jbecker.com' + referer,
-  }
-
-  if xhr:
-    kw['headers']['X-Requested-With'] = 'XMLHttpRequest'
-
-  url = 'https://timetrack.jbecker.com' + url
-  r = s.post(url, *args, data=data, **kw)
-  r.raise_for_status()
-  return r
 
 
 def date_fmt(d, pad_day=False):
@@ -60,7 +33,7 @@ def find_sunday(d):
 
 
 def login(username, password):
-  r = _post('/accounts/login/', data={
+  r = req.post('/accounts/login/', data={
     'username': username,
     'password': password,
   })
@@ -71,11 +44,8 @@ def login(username, password):
   return True
 
 
-Timesheet = namedtuple('Timesheet', 'locked hours work_hours date id')
-
-
 def list_timesheets():
-  r = _get('/?all=1')
+  r = req.get('/?all=1')
 
   doc = BeautifulSoup(r.text, 'html.parser')
   dates = {}
@@ -86,11 +56,11 @@ def list_timesheets():
 
     timesheet_date = datetime.strptime(data[1].contents[0][12:], '%m/%d/%Y').date()
     dates[timesheet_date] = Timesheet(
-      (data[0].find('span')['class'] + [None])[0]  == 'locked',
+      data[5].find('a')['href'][11:-1],
+      timesheet_date,
       float(data[2].contents[0]),
       float(data[3].contents[0]),
-      timesheet_date,
-      data[5].find('a')['href'][11:-1]
+      (data[0].find('span')['class'] + [None])[0]  == 'locked',
     )
 
   return dates
@@ -102,7 +72,7 @@ TimesheetDetails = namedtuple('TimesheetDetails', 'items projects')
 
 
 def timesheet_detail(ts_id):
-  r = s.get(f'https://timetrack.jbecker.com/timesheet/{ts_id}/')
+  r = req.get(f'/timesheet/{ts_id}/')
 
   doc = BeautifulSoup(r.text, 'html.parser')
   items = set()
@@ -131,7 +101,7 @@ def timesheet_detail(ts_id):
 
 
 def create_new_sheet(date):
-  r = _post('/timesheet/', data={
+  r = req.post('/timesheet/', data={
     'csrfmiddlewaretoken': token,
     'newsheet': date.strftime('%m/%d/%Y'),
   }, referer='/accounts/login/')
@@ -228,7 +198,7 @@ def add(date, project, hours, description):
     click.echo('No description provided', err=True)
     sys.exit(Error.INVALID_ARGUMENT)
 
-  r = _post(f'/timesheet/{timesheet.id}/', data={
+  r = req.post(f'/timesheet/{timesheet.id}/', data={
     'log_date': date.strftime('%m/%d/%Y'),
     'project': project.id,
     'hours_worked': hours,
@@ -273,7 +243,7 @@ def addall(date, project, hours, description):
   # Add the same info to Monday through Friday
   with click.progressbar([timesheet.date - timedelta(days=x) for x in range(2, 7)]) as dates:
     for d in dates:
-      r = _post(f'/timesheet/{timesheet.id}/', data={
+      r = req.post(f'/timesheet/{timesheet.id}/', data={
         'log_date': d.strftime('%m/%d/%Y'),
         'project': project.id,
         'hours_worked': hours,
@@ -311,7 +281,7 @@ def delete(date, project, description):
 
   with click.progressbar(to_delete) as items:
     for i in items:
-      _post(f'/timesheet/{timesheet.id}/', data={
+      req.post(f'/timesheet/{timesheet.id}/', data={
         'id': i.id,
         'action': 'delete',
       }, xhr=True)
@@ -384,7 +354,3 @@ def timesheet(date):
       click.echo(f'{i.project:>30}  {i.hours:>6.2f}  {i.description}')
 
     click.echo()
-
-
-if __name__ == '__main__':
-  cli()
