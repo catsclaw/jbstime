@@ -1,25 +1,13 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 import os
 import sys
 
 import click
-from dateutil.parser import parse
-from dateutil.parser._parser import ParserError
 
 from . import req
+from .dates import date_fmt, date_fmt_pad_day, date_from_user_date, find_sunday
 from .error import Error
 from .timesheet import Timesheet
-
-
-def date_fmt(d, pad_day=False):
-  if pad_day:
-    return f'{d:%b} {d.day:>2}, {d.year}'
-  else:
-    return f'{d:%b} {d.day}, {d.year}'
-
-
-def find_sunday(d):
-  return d + timedelta(days=(6 - d.weekday()))
 
 
 def login(username, password):
@@ -32,51 +20,6 @@ def login(username, password):
     return False
 
   return True
-
-
-def create_new_sheet(date):
-  r = req.post('/timesheet/', data={
-    'csrfmiddlewaretoken': token,
-    'newsheet': date.strftime('%m/%d/%Y'),
-  }, referer='/accounts/login/')
-
-  if 'That timesheet already exists' in r.text:
-    click.echo(f'A timesheet already exists for {date_fmt(date)}', err=True)
-    sys.exit(Error.TIMESHEET_EXISTS)
-
-
-def date_from_user_date(date):
-  if date == 'today':
-    return datetime.now().date()
-
-  try:
-    date = parse(date).date()
-  except ParserError:
-    click.echo(f'Can\'t parse date: {data[0]}', err=True)
-    sys.exit(Error.UNPARSABLE_DATE)
-
-  return date
-
-
-def timesheet_from_user_date(date):
-  try:
-    date = date_from_user_date(date)
-    timesheet_date = find_sunday(date)
-  except ParserError:
-    click.echo(f'Can\'t parse date: {data[0]}', err=True)
-    sys.exit(Error.UNPARSABLE_DATE)
-
-  timesheets = Timesheet.list()
-  if not timesheets:
-    click.echo('No timesheets found', err=True)
-    sys.exit(Error.TIMESHEET_MISSING)
-
-  timesheet = timesheets.get(timesheet_date)
-  if not timesheet:
-    click.echo(f'No timesheet found for {date_fmt(timesheet_date)}', err=True)
-    sys.exit(Error.TIMESHEET_MISSING)
-
-  return timesheet
 
 
 @click.group()
@@ -99,7 +42,8 @@ def cli(username, password):
 @click.argument('hours')
 @click.argument('description')
 def add(date, project, hours, description):
-  timesheet = timesheet_from_user_date(date)
+  timesheet = Timesheet.from_user_date(date)
+  date = date_from_user_date(date)
 
   project = Timesheet.projects().get(project.lower())
   if not project:
@@ -115,7 +59,6 @@ def add(date, project, hours, description):
   if hours > 99.0:
     click.echo(f'Too many hours: {hours}', err=True)
     sys.exit(Error.INVALID_ARGUMENT)
-
 
   description = description.strip()
   if not description:
@@ -140,7 +83,7 @@ def add(date, project, hours, description):
 @click.argument('hours')
 @click.argument('description')
 def addall(date, project, hours, description):
-  timesheet = timesheet_from_user_date(date)
+  timesheet = Timesheet.from_user_date(date)
 
   project = Timesheet.projects().get(project.lower())
   if not project:
@@ -236,7 +179,7 @@ def timesheets(limit):
       break
 
     lock = '  (unsubmitted)' if not ts.locked else ''
-    click.echo(f'{date_fmt(ts.date, pad_day=True)}  {ts.hours:>6.2f}{lock}')
+    click.echo(f'{date_fmt_pad_day(ts.date)}  {ts.hours:>6.2f}{lock}')
 
 
 @cli.command()
@@ -253,7 +196,7 @@ def timesheet(date):
   if date == 'latest':
     timesheet = Timesheet.latest()
   else:
-    timesheet = timesheet_from_user_date(date)
+    timesheet = Timesheet.from_user_date(date)
 
   if not timesheet.items:
     click.echo(f'No hours added to the timesheet for {date_fmt(timesheet.date)}')

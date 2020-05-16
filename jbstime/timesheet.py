@@ -2,8 +2,10 @@ from collections import namedtuple
 from datetime import datetime
 
 from bs4 import BeautifulSoup
+import click
 
 from . import req
+from .dates import date_fmt, date_from_user_date, find_sunday
 
 
 _timesheets = None
@@ -52,6 +54,16 @@ class Timesheet:
     return _timesheets
 
   @classmethod
+  def create(cls):
+    r = req.post('/timesheet/', data={
+      'newsheet': date.strftime('%m/%d/%Y'),
+    }, referer='/accounts/login/')
+
+    if 'That timesheet already exists' in r.text:
+      click.echo(f'A timesheet already exists for {date_fmt(date)}', err=True)
+      sys.exit(Error.TIMESHEET_EXISTS)
+
+  @classmethod
   def latest(cls):
     timesheets = cls.list()
     if not timesheets:
@@ -65,6 +77,23 @@ class Timesheet:
     latest = cls.latest()
     latest.items  # Ensures the projects are loaded
     return _projects
+
+  @classmethod
+  def from_user_date(cls, date):
+    date = date_from_user_date(date)
+    timesheet_date = find_sunday(date)
+
+    timesheets = cls.list()
+    if not timesheets:
+      click.echo('No timesheets found', err=True)
+      sys.exit(Error.TIMESHEET_MISSING)
+
+    timesheet = timesheets.get(timesheet_date)
+    if not timesheet:
+      click.echo(f'No timesheet found for {date_fmt(timesheet_date)}', err=True)
+      sys.exit(Error.TIMESHEET_MISSING)
+
+    return timesheet
 
   @property
   def items(self):
