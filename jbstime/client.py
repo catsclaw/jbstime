@@ -53,11 +53,16 @@ def addall(date, project, hours, description):
 @click.argument('date')
 @click.argument('project')
 @click.argument('description', required=False)
-def delete(date, project, description):
-  timesheet = timesheet_from_user_date(date)
+@click.option('--all', is_flag=True)
+def delete(date, project, description, all):
+  timesheet = Timesheet.from_user_date(date)
+  item_date = None if all else date_from_user_date(date)
 
   to_delete = set()
   for i in timesheet.items:
+    if item_date and item_date != i.date:
+      continue
+
     if i.project.lower() == project.lower():
       if description and description.lower() != i.description.lower():
         continue
