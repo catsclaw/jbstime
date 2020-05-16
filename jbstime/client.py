@@ -113,9 +113,17 @@ def timesheets(limit):
 
 
 @cli.command()
-def projects():
+@click.argument('search', required=False)
+@click.option('--all', is_flag=True)
+def projects(search, all):
+  if search:
+    search = search.lower()
+
   for project in list_projects().values():
-    if project.favorite:
+    if search and not project.name.lower().startswith(search):
+      continue
+
+    if all or project.favorite:
       click.echo(project.name)
 
 
