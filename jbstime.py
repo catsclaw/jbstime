@@ -60,11 +60,14 @@ def find_sunday(d):
 
 
 def parse_timesheet_date(d):
-  try:
-    d = parse(d).date()
-  except ParserError:
-    click.echo(f'Can\'t parse date: {d}', err=True)
-    sys.exit(Error.UNPARSABLE_DATE)
+  if d == 'today':
+    d = datetime.now().date()
+  else:
+    try:
+      d = parse(d).date()
+    except ParserError:
+      click.echo(f'Can\'t parse date: {d}', err=True)
+      sys.exit(Error.UNPARSABLE_DATE)
 
   return find_sunday(d)
 
@@ -261,13 +264,9 @@ def delete(date, project, description):
 
 
 @cli.command()
-@click.argument('date', default='current')
+@click.argument('date', default='today')
 def create(date):
-  if date == 'current':
-    date = find_sunday(datetime.now().date())
-  else:
-    date = parse_timesheet_date(date)
-
+  date = parse_timesheet_date(date)
   timesheet_id = create_new_sheet(date)
   click.echo(f'Created timesheet for {date_fmt(date)}')
 
