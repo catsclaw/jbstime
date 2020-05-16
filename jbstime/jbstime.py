@@ -32,37 +32,7 @@ def cli(username, password):
 def add(date, project, hours, description):
   timesheet = Timesheet.from_user_date(date)
   date = date_from_user_date(date)
-
-  project = list_projects().get(project.lower())
-  if not project:
-    click.echo(f'Invalid project: {project}', err=True)
-    sys.exit(Error.INVALID_ARGUMENT)
-
-  try:
-    hours = float(hours)
-  except ValueError:
-    click.echo(f'Invalid hours: {hours}', err=True)
-    sys.exit(Error.INVALID_ARGUMENT)
-
-  if hours > 99.0:
-    click.echo(f'Too many hours: {hours}', err=True)
-    sys.exit(Error.INVALID_ARGUMENT)
-
-  description = description.strip()
-  if not description:
-    click.echo('No description provided', err=True)
-    sys.exit(Error.INVALID_ARGUMENT)
-
-  r = req.post(f'/timesheet/{timesheet.id}/', data={
-    'log_date': date.strftime('%m/%d/%Y'),
-    'project': project.id,
-    'hours_worked': hours,
-    'description': description,
-    'ticket': '',
-    'billing_type': 'M',
-    'parent_ticket': '',
-    'undefined': '',
-  }, xhr=True)
+  timesheet.add_item(date, project, hours, description)
 
 
 @cli.command()
@@ -73,40 +43,10 @@ def add(date, project, hours, description):
 def addall(date, project, hours, description):
   timesheet = Timesheet.from_user_date(date)
 
-  project = list_projects().get(project.lower())
-  if not project:
-    click.echo(f'Invalid project: {project}', err=True)
-    sys.exit(Error.INVALID_ARGUMENT)
-
-  try:
-    hours = float(hours)
-  except ValueError:
-    click.echo(f'Invalid hours: {hours}', err=True)
-    sys.exit(Error.INVALID_ARGUMENT)
-
-  if hours > 99.0:
-    click.echo(f'Too many hours: {hours}', err=True)
-    sys.exit(Error.INVALID_ARGUMENT)
-
-
-  description = description.strip()
-  if not description:
-    click.echo('No description provided', err=True)
-    sys.exit(Error.INVALID_ARGUMENT)
-
   # Add the same info to Monday through Friday
   with click.progressbar([timesheet.date - timedelta(days=x) for x in range(2, 7)]) as dates:
     for d in dates:
-      r = req.post(f'/timesheet/{timesheet.id}/', data={
-        'log_date': d.strftime('%m/%d/%Y'),
-        'project': project.id,
-        'hours_worked': hours,
-        'description': description,
-        'ticket': '',
-        'billing_type': 'M',
-        'parent_ticket': '',
-        'undefined': '',
-      }, xhr=True)
+      timesheet.add_item(d, project, hours, description)
 
 
 @cli.command()

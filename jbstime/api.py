@@ -160,3 +160,35 @@ class Timesheet:
         name,
         option.get('selected') == 'selected'
       )
+
+  def add_item(self, date, project, hours, description):
+    project = list_projects().get(project.lower())
+    if not project:
+      click.echo(f'Invalid project: {project}', err=True)
+      sys.exit(Error.INVALID_ARGUMENT)
+
+    try:
+      hours = float(hours)
+    except ValueError:
+      click.echo(f'Invalid hours: {hours}', err=True)
+      sys.exit(Error.INVALID_ARGUMENT)
+
+    if hours > 99.0:
+      click.echo(f'Too many hours: {hours}', err=True)
+      sys.exit(Error.INVALID_ARGUMENT)
+
+    description = description.strip()
+    if not description:
+      click.echo('No description provided', err=True)
+      sys.exit(Error.INVALID_ARGUMENT)
+
+    req.post(f'/timesheet/{self.id}/', data={
+      'log_date': date.strftime('%m/%d/%Y'),
+      'project': project.id,
+      'hours_worked': hours,
+      'description': description,
+      'ticket': '',
+      'billing_type': 'M',
+      'parent_ticket': '',
+      'undefined': '',
+    }, xhr=True)
