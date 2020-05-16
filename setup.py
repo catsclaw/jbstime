@@ -12,6 +12,6 @@ setup(
     ],
     entry_points='''
         [console_scripts]
-        jbstime=jbstime.jbstime:cli
+        jbstime=jbstime.client:cli
     ''',
 )
