@@ -43,10 +43,36 @@ def add(date, project, hours, description):
 def addall(date, project, hours, description):
   timesheet = Timesheet.from_user_date(date)
 
+  set_holidays = False
+
+  dates = [timesheet.date - timedelta(days=x) for x in range(2, 7)]
+  holidays = list_holidays()
+  conflicts = sorted((d, h) for d, h in holidays.items() if d in dates)
+  if conflicts:
+    cstr = ''
+
+    for i, (d, h) in enumerate(conflicts):
+      if i > 0:
+        if len(conflicts) != 2:
+          cstr += ','
+
+        cstr += ' '
+
+        if i == (len(conflicts) - 1):
+          cstr += 'and '
+
+      cstr += f'{date_fmt(d)} is {h}'
+
+    click.echo(cstr)
+    set_holidays = click.confirm('Set holidays to time off?')
+
   # Add the same info to Monday through Friday
-  with click.progressbar([timesheet.date - timedelta(days=x) for x in range(2, 7)]) as dates:
-    for d in dates:
-      timesheet.add_item(d, project, hours, description)
+  with click.progressbar(dates) as item_dates:
+    for d in item_dates:
+      if set_holidays and d in holidays:
+        timesheet.add_item(d, 'JBS - Paid Holiday', 8.0, holidays[d])
+      else:
+        timesheet.add_item(d, project, hours, description)
 
 
 @cli.command()
@@ -57,14 +83,16 @@ def addall(date, project, hours, description):
 def delete(date, project, description, all):
   timesheet = Timesheet.from_user_date(date)
   item_date = None if all else date_from_user_date(date)
+  project = project.lower()
+  description = description.lower() if description else None
 
   to_delete = set()
   for i in timesheet.items:
     if item_date and item_date != i.date:
       continue
 
-    if i.project.lower() == project.lower():
-      if description and description.lower() != i.description.lower():
+    if project == 'all' or project == i.project.lower():
+      if description and description != i.description.lower():
         continue
 
       to_delete.add(i)
