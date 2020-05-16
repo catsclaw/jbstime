@@ -74,10 +74,7 @@ def delete(date, project, description):
 
   with click.progressbar(to_delete) as items:
     for i in items:
-      req.post(f'/timesheet/{timesheet.id}/', data={
-        'id': i.id,
-        'action': 'delete',
-      }, xhr=True)
+      timesheet.delete_item(i.id)
 
 
 @cli.command()
@@ -85,7 +82,7 @@ def delete(date, project, description):
 def create(date):
   date = date_from_user_date(date)
   timesheet_date = find_sunday(date)
-  timesheet_id = create_new_sheet(timesheet_date)
+  timesheet_id = Timesheet.create(timesheet_date)
   click.echo(f'Created timesheet for {date_fmt(timesheet_date)}')
 
 

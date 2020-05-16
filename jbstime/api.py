@@ -192,3 +192,9 @@ class Timesheet:
       'parent_ticket': '',
       'undefined': '',
     }, xhr=True)
+
+  def delete_item(self, item_id):
+    req.post(f'/timesheet/{self.id}/', data={
+      'id': item_id,
+      'action': 'delete',
+    }, xhr=True)
