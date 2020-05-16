@@ -6,6 +6,7 @@ import click
 
 from . import req
 from .api import list_holidays, list_projects, login, Timesheet
+from .config import load_config
 from .dates import date_fmt, date_fmt_pad_day, date_from_user_date, find_sunday
 from .error import Error
 
@@ -14,15 +15,20 @@ from .error import Error
 @click.option('-u', '--user', 'username')
 @click.option('-p', '--pass', 'password')
 def cli(username, password):
+  config = load_config()
+
+  username = username or config['username']
+  password = password or config['password']
+
   if not username:
-    username = os.environ.get('JBS_TIMETRACK_USER')
+    username = click.prompt('Username')
 
   if not password:
-    password = os.environ.get('JBS_TIMETRACK_PASS')
+    password = click.prompt('Password', hide_input=True)
 
   if not login(username, password):
     click.echo('Login failed. Check your username and password.', err=True)
-
+    sys.exit(Error.LOGIN_FAILED)
 
 @cli.command()
 @click.argument('date')

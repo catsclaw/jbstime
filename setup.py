@@ -9,6 +9,7 @@ setup(
       'click',
       'python-dateutil',
       'requests',
+      'pyyaml',
     ],
     entry_points='''
         [console_scripts]
