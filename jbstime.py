@@ -1,6 +1,7 @@
 from collections import namedtuple
 from datetime import datetime, timedelta
 from enum import IntEnum
+import os
 import sys
 
 from bs4 import BeautifulSoup
@@ -16,31 +17,35 @@ class Error(IntEnum):
   UNPARSABLE_DATE = 3
   TIMESHEET_EXISTS = 4
 
-
 s = requests.Session()
 
 
 def _get(url, *args, **kw):
-  return _req('get', url, *args, **kw)
+  url = 'https://timetrack.jbecker.com' + url
+  r = s.get(url, *args, **kw)
+  r.raise_for_status()
+  return r
 
 
-def _post(url, data, *args, referer=None, **kw):
-  # If we're doing a post, we need a csrf token
+def _post(url, data, *args, referer=None, xhr=False, **kw):
   referer = referer or url
-  r = s.get('https://timetrack.jbecker.com' + referer)
+  r = _get(referer)
   csrf_token = r.cookies['csrftoken']
 
+  data['csrf_token'] = csrf_token
   data['csrfmiddlewaretoken'] = csrf_token
-  kw.setdefault('headers', {})
-  kw['headers']['Referer'] = referer
+  kw['headers'] = {
+    'X-CSRFToken': csrf_token,
+    'Referer': 'https://timetrack.jbecker.com' + referer,
+  }
 
-  return _req('post', url, *args, data=data, **kw)
+  if xhr:
+    kw['headers']['X-Requested-With'] = 'XMLHttpRequest'
 
-
-def _req(method, url, *args, **kw):
   url = 'https://timetrack.jbecker.com' + url
-  print('**', kw)
-  return s.request(method, url, *args, **kw)
+  r = s.post(url, *args, data=data, **kw)
+  r.raise_for_status()
+  return r
 
 
 def date_fmt(d, pad_day=False):
@@ -68,10 +73,8 @@ def login(username, password):
   r = _post('/accounts/login/', data={
     'username': username,
     'password': password,
-    'next': '/?all=1',
-  }, referer='/accounts/login/')
+  })
 
-  r.raise_for_status()
   if 'Your username and password didn\'t match' in r.text:
     return False
 
@@ -83,7 +86,6 @@ Timesheet = namedtuple('Timesheet', 'locked hours work_hours date id')
 
 def list_timesheets():
   r = _get('/?all=1')
-  r.raise_for_status()
 
   doc = BeautifulSoup(r.text, 'html.parser')
   dates = {}
@@ -110,8 +112,7 @@ TimesheetDetails = namedtuple('TimesheetDetails', 'items projects')
 
 
 def timesheet_detail(ts_id):
-  r = _get(f'/timesheet/{ts_id}/')
-  r.raise_for_status()
+  r = s.get(f'https://timetrack.jbecker.com/timesheet/{ts_id}/')
 
   doc = BeautifulSoup(r.text, 'html.parser')
   items = set()
@@ -143,12 +144,32 @@ def create_new_sheet(date):
   r = _post('/timesheet/', data={
     'csrfmiddlewaretoken': token,
     'newsheet': date.strftime('%m/%d/%Y'),
-  }, referer='/accounts/login/?next=/')
+  }, referer='/accounts/login/')
 
-  r.raise_for_status()
   if 'That timesheet already exists' in r.text:
     click.echo(f'A timesheet already exists for {date_fmt(date)}', err=True)
     sys.exit(Error.TIMESHEET_EXISTS)
+
+
+def timesheet_from_user_date(date):
+  try:
+    date = parse(date).date()
+    timesheet_date = find_sunday(date)
+  except ParserError:
+    click.echo(f'Can\'t parse date: {data[0]}', err=True)
+    sys.exit(Error.UNPARSABLE_DATE)
+
+  timesheets = list_timesheets()
+  if not timesheets:
+    click.echo('No timesheets found', err=True)
+    sys.exit(Error.TIMESHEET_MISSING)
+
+  timesheet = timesheets.get(timesheet_date)
+  if not timesheet:
+    click.echo(f'No timesheet found for {date_fmt(timesheet_date)}', err=True)
+    sys.exit(Error.TIMESHEET_MISSING)
+
+  return timesheet
 
 
 @click.group()
@@ -171,24 +192,9 @@ def cli(username, password):
 @click.argument('hours')
 @click.argument('description')
 def add(date, project, hours, description):
-  try:
-    date = parse(date).date()
-    timesheet_date = find_sunday(date)
-  except ParserError:
-    click.echo(f'Can\'t parse date: {data[0]}', err=True)
-    sys.exit(Error.UNPARSABLE_DATE)
-
-  timesheets = list_timesheets()
-  if not timesheets:
-    click.echo('No timesheets found', err=True)
-    sys.exit(Error.TIMESHEET_MISSING)
-
-  timesheet = timesheets.get(timesheet_date)
-  if not timesheet:
-    click.echo(f'No timesheet found for {date_fmt(timesheet_date)}', err=True)
-    sys.exit(Error.TIMESHEET_MISSING)
-
+  timesheet = timesheet_from_user_date(date)
   detail = timesheet_detail(timesheet.id)
+
   project = detail.projects.get(project.lower())
   if not project:
     click.echo(f'Invalid project: {project}', err=True)
@@ -200,12 +206,17 @@ def add(date, project, hours, description):
     click.echo(f'Invalid hours: {hours}', err=True)
     sys.exit(Error.INVALID_ARGUMENT)
 
+  if hours > 99.0:
+    click.echo(f'Too many hours: {hours}', err=True)
+    sys.exit(Error.INVALID_ARGUMENT)
+
+
   description = description.strip()
   if not description:
     click.echo('No description provided', err=True)
     sys.exit(Error.INVALID_ARGUMENT)
 
-  r = _post(f'/timesheet/{timesheet.id}/', params={
+  r = _post(f'/timesheet/{timesheet.id}/', data={
     'log_date': date.strftime('%m/%d/%Y'),
     'project': project.id,
     'hours_worked': hours,
@@ -214,20 +225,39 @@ def add(date, project, hours, description):
     'billing_type': 'M',
     'parent_ticket': '',
     'undefined': '',
-  })
+  }, xhr=True)
 
-# jbstime add 5/3 "Petco - Mobile Squad" 8 "This is my description"
-# jbstime add 5/1 5/3 "Petco - Mobile Squad" 8 "This is my description"
 
-# csrf_token: 5Tv6lZ8LWJM4ea7rWiXnDNEtecxe7b6a
-# log_date: 05/15/2020
-# project: 693
-# hours_worked: 1
-# description: Architecture
-# ticket:
-# billing_type: M
-# parent_ticket:
-# undefined:
+@cli.command()
+@click.argument('date')
+@click.argument('project')
+@click.argument('description', required=False)
+def delete(date, project, description):
+  timesheet = timesheet_from_user_date(date)
+  details = timesheet_detail(timesheet.id)
+
+  to_delete = set()
+  for i in details.items:
+    if i.project.lower() == project.lower():
+      if description and description.lower() != i.description.lower():
+        continue
+
+      to_delete.add(i)
+
+  if not len(to_delete):
+    click.echo('No matching items')
+    sys.exit()
+
+  click.echo(f'{len(to_delete)} items to delete')
+  if not click.confirm('Are you sure?'):
+    return
+
+  with click.progressbar(to_delete) as items:
+    for i in items:
+      _post(f'/timesheet/{timesheet.id}/', data={
+        'id': i.id,
+        'action': 'delete',
+      }, xhr=True)
 
 
 @cli.command()
