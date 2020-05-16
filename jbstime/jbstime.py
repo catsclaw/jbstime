@@ -5,21 +5,9 @@ import sys
 import click
 
 from . import req
+from .api import list_holidays, list_projects, login, Timesheet
 from .dates import date_fmt, date_fmt_pad_day, date_from_user_date, find_sunday
 from .error import Error
-from .timesheet import Timesheet
-
-
-def login(username, password):
-  r = req.post('/accounts/login/', data={
-    'username': username,
-    'password': password,
-  })
-
-  if 'Your username and password didn\'t match' in r.text:
-    return False
-
-  return True
 
 
 @click.group()
@@ -45,7 +33,7 @@ def add(date, project, hours, description):
   timesheet = Timesheet.from_user_date(date)
   date = date_from_user_date(date)
 
-  project = Timesheet.projects().get(project.lower())
+  project = list_projects().get(project.lower())
   if not project:
     click.echo(f'Invalid project: {project}', err=True)
     sys.exit(Error.INVALID_ARGUMENT)
@@ -85,7 +73,7 @@ def add(date, project, hours, description):
 def addall(date, project, hours, description):
   timesheet = Timesheet.from_user_date(date)
 
-  project = Timesheet.projects().get(project.lower())
+  project = list_projects().get(project.lower())
   if not project:
     click.echo(f'Invalid project: {project}', err=True)
     sys.exit(Error.INVALID_ARGUMENT)
@@ -184,10 +172,15 @@ def timesheets(limit):
 
 @cli.command()
 def projects():
-  timesheet = Timesheet.latest()
-  for project in Timesheet.projects().values():
+  for project in list_projects().values():
     if project.favorite:
-      print(project.name)
+      click.echo(project.name)
+
+
+@cli.command()
+def holidays():
+  for date, holiday in list_holidays().items():
+    click.echo(f'{date_fmt_pad_day(date)}: {holiday}')
 
 
 @cli.command()

@@ -10,10 +10,48 @@ from .dates import date_fmt, date_from_user_date, find_sunday
 
 _timesheets = None
 _projects = None
+_holidays = None
 
 
 TimesheetItem = namedtuple('TimesheetItem', 'id hours date project description')
 Project = namedtuple('Project', 'id name favorite')
+
+
+def login(username, password):
+  r = req.post('/accounts/login/', data={
+    'username': username,
+    'password': password,
+  })
+
+  if 'Your username and password didn\'t match' in r.text:
+    return False
+
+  return True
+
+
+def list_projects():
+  latest = Timesheet.latest()
+  latest.items  # Ensures the projects are loaded
+  return _projects
+
+
+def list_holidays():
+  global _holidays
+
+  if _holidays is not None:
+    return _holidays
+
+  r = req.get(f'/timesheet/')
+  doc = BeautifulSoup(r.text, 'html.parser')
+  holidays = {}
+  for td in doc.find('div', attrs={'class': 'ptoplaceholder'}).find_all('td'):
+    if td.contents[0] == 'Upcoming Company Holidays':
+      for holiday in td.find_next_sibling('td').find_all('p'):
+        h, d = holiday.contents[0].split(' - ')
+        holidays[datetime.strptime(d, '%m/%d/%Y').date()] = h
+
+  _holidays = holidays
+  return holidays
 
 
 class Timesheet:
@@ -73,12 +111,6 @@ class Timesheet:
     return list(timesheets.values())[0]
 
   @classmethod
-  def projects(cls):
-    latest = cls.latest()
-    latest.items  # Ensures the projects are loaded
-    return _projects
-
-  @classmethod
   def from_user_date(cls, date):
     date = date_from_user_date(date)
     timesheet_date = find_sunday(date)
@@ -106,7 +138,6 @@ class Timesheet:
     global _projects
 
     r = req.get(f'/timesheet/{self.id}/')
-
     doc = BeautifulSoup(r.text, 'html.parser')
     self._items = set()
     for row in doc.find('div', attrs={'class': 'tableholder'}).find_all('tr'):
