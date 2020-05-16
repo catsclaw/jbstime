@@ -120,7 +120,7 @@ def projects(search, all):
     search = search.lower()
 
   for project in list_projects().values():
-    if search and not project.name.lower().startswith(search):
+    if search and not search in project.name.lower():
       continue
 
     if all or project.favorite:
