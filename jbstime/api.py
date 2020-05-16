@@ -136,6 +136,11 @@ class Timesheet:
 
     return self._items
 
+  def submit(self):
+    req.post(f'/timesheet/{self.id}/', data={
+      'action': 'finalize',
+    }, xhr=True)
+
   def _load_details(self):
     global _projects
 

@@ -128,6 +128,29 @@ def create(date):
 
 
 @cli.command()
+@click.argument('date', default='today')
+def submit(date):
+  timesheet = Timesheet.from_user_date(date)
+  if timesheet.locked:
+    click.echo(f'The timesheet for {date_fmt(timesheet.date)} has already been submitted', err=True)
+    sys.exit(Error.TIMESHEET_SUBMITTED)
+
+  if timesheet.hours < 39.9:
+    if timesheet.hours < 0.01:
+      msg = 'There is no time logged. Submit anyway?'
+    else:
+      plural = 's' if timesheet.hours > 1 else ''
+      verb = 'is' if 0.09 < timesheet.hours < 1.01 else 'are'
+      msg = f'There {verb} only {timesheet.hours} hour{plural} logged. Submit anyway?'
+
+    if not click.confirm(msg):
+      sys.exit()
+
+  timesheet.submit()
+  click.echo(f'Submitted timesheet for {date_fmt(timesheet.date)}')
+
+
+@cli.command()
 @click.option('--limit', default='5', show_default=True, help='Number to show, or "all"')
 def timesheets(limit):
   dates = Timesheet.list()
@@ -181,9 +204,10 @@ def timesheet(date):
     click.echo(f'No hours added to the timesheet for {date_fmt(timesheet.date)}')
     sys.exit()
 
-  hour_sum = sum(x.hours for x in timesheet.items)
-  plural = 's' if hour_sum > 1.001 else ''
-  title = f'Timesheet for {date_fmt(timesheet.date)} ({hour_sum} hour{plural})'
+
+  plural = 's' if timesheet.hours > 1.001 else ''
+  unsubmitted = ', unsubmitted' if not timesheet.locked else ''
+  title = f'Timesheet for {date_fmt(timesheet.date)} ({timesheet.hours} hour{plural}{unsubmitted})'
 
   click.echo()
   click.echo(title)
