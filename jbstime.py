@@ -59,19 +59,6 @@ def find_sunday(d):
   return d + timedelta(days=(6 - d.weekday()))
 
 
-def parse_timesheet_date(d):
-  if d == 'today':
-    d = datetime.now().date()
-  else:
-    try:
-      d = parse(d).date()
-    except ParserError:
-      click.echo(f'Can\'t parse date: {d}', err=True)
-      sys.exit(Error.UNPARSABLE_DATE)
-
-  return find_sunday(d)
-
-
 def login(username, password):
   r = _post('/accounts/login/', data={
     'username': username,
@@ -154,9 +141,31 @@ def create_new_sheet(date):
     sys.exit(Error.TIMESHEET_EXISTS)
 
 
-def timesheet_from_user_date(date):
+def get_latest_timesheet():
+  timesheets = list_timesheets()
+  if not timesheets:
+    click.echo('No timesheets found', err=True)
+    sys.exit(Error.TIMESHEET_MISSING)
+
+  return list(timesheets.values())[0]
+
+
+def date_from_user_date(date):
+  if date == 'today':
+    return datetime.now().date()
+
   try:
     date = parse(date).date()
+  except ParserError:
+    click.echo(f'Can\'t parse date: {data[0]}', err=True)
+    sys.exit(Error.UNPARSABLE_DATE)
+
+  return date
+
+
+def timesheet_from_user_date(date):
+  try:
+    date = date_from_user_date(date)
     timesheet_date = find_sunday(date)
   except ParserError:
     click.echo(f'Can\'t parse date: {data[0]}', err=True)
@@ -234,6 +243,51 @@ def add(date, project, hours, description):
 @cli.command()
 @click.argument('date')
 @click.argument('project')
+@click.argument('hours')
+@click.argument('description')
+def addall(date, project, hours, description):
+  timesheet = timesheet_from_user_date(date)
+  detail = timesheet_detail(timesheet.id)
+
+  project = detail.projects.get(project.lower())
+  if not project:
+    click.echo(f'Invalid project: {project}', err=True)
+    sys.exit(Error.INVALID_ARGUMENT)
+
+  try:
+    hours = float(hours)
+  except ValueError:
+    click.echo(f'Invalid hours: {hours}', err=True)
+    sys.exit(Error.INVALID_ARGUMENT)
+
+  if hours > 99.0:
+    click.echo(f'Too many hours: {hours}', err=True)
+    sys.exit(Error.INVALID_ARGUMENT)
+
+
+  description = description.strip()
+  if not description:
+    click.echo('No description provided', err=True)
+    sys.exit(Error.INVALID_ARGUMENT)
+
+  # Add the same info to Monday through Friday
+  with click.progressbar([timesheet.date - timedelta(days=x) for x in range(2, 7)]) as dates:
+    for d in dates:
+      r = _post(f'/timesheet/{timesheet.id}/', data={
+        'log_date': d.strftime('%m/%d/%Y'),
+        'project': project.id,
+        'hours_worked': hours,
+        'description': description,
+        'ticket': '',
+        'billing_type': 'M',
+        'parent_ticket': '',
+        'undefined': '',
+      }, xhr=True)
+
+
+@cli.command()
+@click.argument('date')
+@click.argument('project')
 @click.argument('description', required=False)
 def delete(date, project, description):
   timesheet = timesheet_from_user_date(date)
@@ -266,9 +320,10 @@ def delete(date, project, description):
 @cli.command()
 @click.argument('date', default='today')
 def create(date):
-  date = parse_timesheet_date(date)
-  timesheet_id = create_new_sheet(date)
-  click.echo(f'Created timesheet for {date_fmt(date)}')
+  date = date_from_user_date(date)
+  timesheet_date = find_sunday(date)
+  timesheet_id = create_new_sheet(timesheet_date)
+  click.echo(f'Created timesheet for {date_fmt(timesheet_date)}')
 
 
 @cli.command()
@@ -293,23 +348,21 @@ def timesheets(limit):
 
 
 @cli.command()
+def projects():
+  timesheet = get_latest_timesheet()
+  details = timesheet_detail(timesheet.id)
+  for project in details.projects.values():
+    if project.favorite:
+      print(project.name)
+
+
+@cli.command()
 @click.argument('date', default='latest')
 def timesheet(date):
-  timesheets = list_timesheets()
-  if not timesheets:
-    click.echo('No timesheets found', err=True)
-    sys.exit(Error.TIMESHEET_MISSING)
-
   if date == 'latest':
-    timesheet = list(timesheets.values())[0]
+    timesheet = get_latest_timesheet()
   else:
-    date = parse_timesheet_date(date)
-
-    try:
-      timesheet = timesheets[date]
-    except KeyError:
-      click.echo(f'No timesheet found for {date_fmt(date)}', err=True)
-      sys.exit(Error.TIMESHEET_MISSING)
+    timesheet = timesheet_from_user_date(date)
 
   detail = timesheet_detail(timesheet.id)
 
