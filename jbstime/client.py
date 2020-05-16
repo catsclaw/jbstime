@@ -101,7 +101,9 @@ def delete(date, project, description, all):
     click.echo('No matching items')
     sys.exit()
 
-  click.echo(f'{len(to_delete)} items to delete')
+  count = len(to_delete)
+  plural = 's' if count > 1 else ''
+  click.echo(f'{count} item{plural} to delete')
   if not click.confirm('Are you sure?'):
     return
 
@@ -174,7 +176,8 @@ def timesheet(date):
     sys.exit()
 
   hour_sum = sum(x.hours for x in timesheet.items)
-  title = f'Timesheet for {date_fmt(timesheet.date)} ({hour_sum} hours)'
+  plural = 's' if hour_sum > 1.001 else ''
+  title = f'Timesheet for {date_fmt(timesheet.date)} ({hour_sum} hour{plural})'
 
   click.echo()
   click.echo(title)
