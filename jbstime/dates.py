@@ -30,5 +30,3 @@ def date_from_user_date(date):
 
 def find_sunday(d):
   return d + timedelta(days=(6 - d.weekday()))
-
-

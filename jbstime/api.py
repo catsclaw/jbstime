@@ -1,11 +1,13 @@
 from collections import namedtuple
 from datetime import datetime
+import sys
 
 from bs4 import BeautifulSoup
 import click
 
 from . import req
 from .dates import date_fmt, date_from_user_date, find_sunday
+from .error import Error
 
 
 _timesheets = None
@@ -162,8 +164,8 @@ class Timesheet:
       )
 
   def add_item(self, date, project, hours, description):
-    project = list_projects().get(project.lower())
-    if not project:
+    p = list_projects().get(project.lower())
+    if not p:
       click.echo(f'Invalid project: {project}', err=True)
       sys.exit(Error.INVALID_ARGUMENT)
 
@@ -184,7 +186,7 @@ class Timesheet:
 
     req.post(f'/timesheet/{self.id}/', data={
       'log_date': date.strftime('%m/%d/%Y'),
-      'project': project.id,
+      'project': p.id,
       'hours_worked': hours,
       'description': description,
       'ticket': '',
