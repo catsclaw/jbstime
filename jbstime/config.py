@@ -22,7 +22,7 @@ def load_config():
     config.update(yaml_config)
   except FileNotFoundError:
     pass
-  except:
+  except Exception:
     click.echo(f'Error reading {config_file} - please verify that it is a valid yaml file', err=True)
     sys.exit(Error.CONFIG_ERROR)
 

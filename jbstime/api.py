@@ -43,7 +43,7 @@ def list_holidays():
   if _holidays is not None:
     return _holidays
 
-  r = req.get(f'/timesheet/')
+  r = req.get('/timesheet/')
   doc = BeautifulSoup(r.text, 'html.parser')
   holidays = {}
   for td in doc.find('div', attrs={'class': 'ptoplaceholder'}).find_all('td'):
@@ -87,14 +87,14 @@ class Timesheet:
         timesheet_date,
         float(data[2].contents[0]),
         float(data[3].contents[0]),
-        (data[0].find('span')['class'] + [None])[0]  == 'locked',
+        (data[0].find('span')['class'] + [None])[0] == 'locked',
       )
 
     _timesheets = dates
     return _timesheets
 
   @classmethod
-  def create(cls):
+  def create(cls, date):
     r = req.post('/timesheet/', data={
       'newsheet': date.strftime('%m/%d/%Y'),
     }, referer='/accounts/login/')

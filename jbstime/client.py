@@ -1,10 +1,8 @@
 from datetime import timedelta
-import os
 import sys
 
 import click
 
-from . import req
 from .api import list_holidays, list_projects, login, Timesheet
 from .config import load_config
 from .dates import date_fmt, date_fmt_pad_day, date_from_user_date, find_sunday
@@ -44,6 +42,7 @@ def cli(username, password):
   if not login(username, password):
     click.echo('Login failed. Check your username and password.', err=True)
     sys.exit(Error.LOGIN_FAILED)
+
 
 @cli.command()
 @click.argument('date')
@@ -172,7 +171,7 @@ def create(date):
 
   date = date_from_user_date(date)
   timesheet_date = find_sunday(date)
-  timesheet_id = Timesheet.create(timesheet_date)
+  Timesheet.create(timesheet_date)
   click.echo(f'Created timesheet for {date_fmt(timesheet_date)}')
 
 
@@ -246,7 +245,7 @@ def projects(search, all):
     search = search.lower()
 
   for project in list_projects().values():
-    if search and not search in project.name.lower():
+    if search and search not in project.name.lower():
       continue
 
     if all or project.favorite:
@@ -278,7 +277,6 @@ def timesheet(date):
   if not timesheet.items:
     click.echo(f'No hours added to the timesheet for {date_fmt(timesheet.date)}')
     sys.exit()
-
 
   plural = 's' if timesheet.hours > 1.001 else ''
   unsubmitted = ', unsubmitted' if not timesheet.locked else ''

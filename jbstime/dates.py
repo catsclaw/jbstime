@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 import sys
 
+import click
 from dateutil.parser import parse
 from dateutil.parser._parser import ParserError
 
@@ -23,7 +24,7 @@ def date_from_user_date(date):
   try:
     date = parse(date).date()
   except ParserError:
-    click.echo(f'Can\'t parse date: {data[0]}', err=True)
+    click.echo(f'Can\'t parse date: {date}', err=True)
     sys.exit(Error.UNPARSABLE_DATE)
 
   return date
