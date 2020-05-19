@@ -229,6 +229,9 @@ def timesheets(limit):
       click.echo(f'Invalid limit: {limit}', err=True)
       sys.exit(Error.INVALID_ARGUMENT)
 
+  if limit:
+    limit -= 1
+
   for i, ts in enumerate(dates.values()):
     if i == limit:
       break
