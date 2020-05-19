@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Time Track</title>
+  <link rel="stylesheet" type="text/css" href="/static/css/smoothness/jquery-ui-1.10.3.custom.css" media="screen" />
+  <link rel="stylesheet" type="text/css" href="/static/css/blue.css" media="screen" />
+  <link rel="stylesheet" type="text/css" href="/static/css/style.css" media="screen" />
+  <link rel="stylesheet" type="text/css" href="/static/css/print.css" media="print" />
+  <link rel="stylesheet" type="text/css" href="/static/css/jquery.multiselect.css" media="screen" />
+  <link rel="stylesheet" type="text/css" href="/static/css/jquery.multiselect.filter.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="/static/css/datatables.min.css" media="screen" />
+    <link rel="icon" type="image/x-icon" href="/static/img/favicon.ico" />
+  <style type="text/css">
+  #loadingDiv {
+      position:absolute;
+      top: 50%;
+      left: 50%;
+      width:100px;
+      height:100px;
+      margin-top: -50px; /*set to a negative number 1/2 of your height*/
+      margin-left: -50px; /*set to a negative number 1/2 of your width*/
+      border: 4px solid #ccc;
+      background-color: #f3f3f3;
+    z-index: 10000;
+  }
+  </style>
+
+</head>
+<body>
+
+
+<div id="wrapper">
+  <div id="top-menu">
+      <div id="account">
+
+        <ul><li><a class="login" href="/accounts/password_change/">Change Password</a></li>
+        <li><a class="logout" href="/accounts/logout/">Logout</a></li></ul>
+
+      </div>
+  </div>
+  <div id="header">
+
+    <h1>Time Track</h1>
+        <div id="main-menu">
+            <ul>
+                <li><a class="home" href="http://www.jbecker.com/">JBS Home</a></li>
+                <li><a class="selected" href="/timesheet/" >My Timesheets</a></li>
+                <li><a class="" href="/accounts/">My Account</a></li>
+                <li><a class="" href="/report/">Reports</a></li>
+                <li><a class="" href="/skills/">Skills</a></li>
+
+            </ul>
+        </div>
+  </div>
+  <div id="content" class="clearfix">
+
+
+
+<div id="loadingDiv"><img src="/static/img/loading.gif" height="100" width="100"></div>
+<div class="timesheet-full-header">
+<h1>Test Testerson's Timesheet <span>Ending 05/17/2020</span></h1>
+<span class="timesheet-status">This timesheet is currently locked and cannot be edited</span>
+
+</div>
+<table cellpadding="0" cellspacing="0" border="0" class="scrolltable tableheader">
+    <thead>
+      <tr>
+        <th class="head1">Date*</th>
+        <th class="head2">Projects* <select id="fav_projects" multiple="multipe"><optgroup label="Agilis"><option value="799">Agilis - RFP Response Assistance</option></optgroup><optgroup label="AIM Group"><option value="112">AIMM - Product Hub</option></optgroup><optgroup label="AmTote"><option value="650">AmTote - Dev</option></optgroup><optgroup label="Arraya Solutions"><option value="580">Arraya Solutions - ACTS Azure SSO Dev</option></optgroup><optgroup label="Backstage"><option value="800">Backstage - Alternate Profiles Admin</option><option value="801">Backstage - Alternate Profiles Dev</option><option value="864">Backstage - Crew Profiles Admin</option><option value="863">Backstage - Crew Profiles Dev</option><option value="439">Backstage - Dev</option><option value="866">Backstage - Internationalization Admin</option><option value="865">Backstage - Internationalization Dev</option><option value="566">Backstage - iOS Support</option><option value="562">Backstage - iOS Support Admin</option><option value="563">Backstage - iOS Support Bugs</option><option value="564">Backstage - iOS Support Dev</option><option value="565">Backstage - iOS Support PM</option><option value="174">Backstage - Maint</option><option value="652">Backstage - New Subscription Flow Admin</option><option value="653">Backstage - New Subscription Flow Bugs</option><option value="654">Backstage - New Subscription Flow Dev</option><option value="655">Backstage - New Subscription Flow PM</option><option value="656">Backstage - New Subscription Flow Support</option><option value="170">Backstage - PM</option><option value="806">Backstage - SCA</option><option value="780">Backstage - Scheduling Tools Admin</option><option value="781">Backstage - Scheduling Tools Bugs</option><option value="782">Backstage - Scheduling Tools Dev</option><option value="783">Backstage - Scheduling Tools Support</option><option value="759">Backstage - Self Cancellation Admin</option><option value="758">Backstage - Self Cancellation Bugs</option><option value="757">Backstage - Self Cancellation Dev</option><option value="760">Backstage - Self Cancellation Support</option><option value="825">Backstage - SEO</option><option value="859">Backstage - Shortlists Admin</option><option value="858">Backstage - Shortlists Dev</option><option value="185">Backstage - Support</option><option value="768">Backstage - VAT Admin</option><option value="769">Backstage - VAT Bugs</option><option value="770">Backstage - VAT Dev</option><option value="771">Backstage - VAT Support</option></optgroup><optgroup label="Billboard"><option value="239">Billboard</option><option value="372">Billboard - BBMA PM</option><option value="371">Billboard - BBMA PM Maint</option><option value="434">Billboard - Chart Manager Dev</option><option value="435">Billboard - Chart Manager PM</option><option value="363">Billboard - MC  PM Maint</option><option value="364">Billboard - MC PM</option><option value="240">Billboard - PM</option><option value="378">Billboard – BBMA CO</option><option value="373">Billboard – BBMA Dev</option><option value="374">Billboard – BBMA Overhead</option><option value="376">Billboard – BBMA PST</option><option value="375">Billboard – BBMA Setup</option><option value="377">Billboard – BBMA Support</option><option value="370">Billboard – MC CO</option><option value="365">Billboard – MC Dev</option><option value="366">Billboard – MC Overhead</option><option value="368">Billboard – MC PST</option><option value="367">Billboard – MC Setup</option><option value="369">Billboard – MC Support</option></optgroup><optgroup label="Blick"><option value="646">Blick - Azure</option><option value="243">Blick - PM</option><option value="242">Blick - Services</option><option value="241">Blick - UI</option></optgroup><optgroup label="Blinds M2O"><option value="436">Blinds M2O - Admin Site</option><option value="417">Blinds M2O - Design</option><option value="396">Blinds M2O - Dev</option><option value="394">Blinds M2O - Discovery</option><option value="418">Blinds M2O - Hardware</option><option value="397">Blinds M2O - Maint</option><option value="398">Blinds M2O - Overhead</option><option value="547">Blinds M2O - Phase 2 Design</option><option value="549">Blinds M2O - Phase 2 Dev</option><option value="548">Blinds M2O - Phase 2 Discovery</option><option value="558">Blinds M2O - Phase 2 e-Commerce</option><option value="559">Blinds M2O - Phase 2 Hardware</option><option value="550">Blinds M2O - Phase 2 Overhead</option><option value="551">Blinds M2O - Phase 2 PM</option><option value="552">Blinds M2O - Phase 2 QA</option><option value="395">Blinds M2O - PM</option><option value="419">Blinds M2O - QA</option><option value="356">Budget Blinds - Discovery</option></optgroup><optgroup label="Booker"><option value="355">Booker - Dev</option><option value="450">Booker - PetSmart Dev</option><option value="451">Booker - PetSmart PM</option><option value="354">Booker - PM</option></optgroup><optgroup label="Brevard"><option value="478">Brevard - Bios Dev</option><option value="479">Brevard - Bios Maintenance</option><option value="491">Brevard - Supoort</option></optgroup><optgroup label="Brook Lane Partners"><option value="164">Pereira - HFLaw.com</option><option value="162">Pereira - SF Integration</option></optgroup><optgroup label="Centinel"><option value="444">Centinel - Design</option><option value="442">Centinel - Dev</option><option value="437">Centinel - Discovery</option><option value="441">Centinel - Overhead</option><option value="443">Centinel - PM</option><option value="628">Centinel Desktop App - Dev</option><option value="627">Centinel Desktop App - Maint</option><option value="629">Centinel Desktop App - Overhead</option><option value="502">Centinel v2 - Design</option><option value="503">Centinel v2 - Dev</option><option value="504">Centinel v2 - Overhead</option><option value="515">Centinel v3 - Dev</option><option value="516">Centinel v3 - Maintenance</option><option value="514">Centinel v3 - Overhead</option></optgroup><optgroup label="Climb Technology"><option value="329">Climb - Customer Module Dev</option><option value="330">Climb - Customer Module Maint</option><option value="328">Climb - Customer Module PM</option><option value="180">Climb Technology - Admin Dev</option><option value="245">Climb Technology - Admin Maint</option><option value="294">Climb Technology - Admin Solr Prod Picker</option><option value="246">Climb Technology - Admin Support</option><option value="253">Climb Technology - C&amp;C Chat Dev</option><option value="254">Climb Technology - C&amp;C Chat Maint</option><option value="255">Climb Technology - C&amp;C Chat PM</option><option value="256">Climb Technology - C&amp;C Chat Support</option><option value="201">Climb Technology - C&amp;C Dev</option><option value="238">Climb Technology - C&amp;C FAQ Dev</option><option value="251">Climb Technology - C&amp;C FAQ Maint</option><option value="250">Climb Technology - C&amp;C FAQ PM</option><option value="252">Climb Technology - C&amp;C FAQ Support</option><option value="248">Climb Technology - C&amp;C Maint</option><option value="399">Climb Technology - C&amp;C PM</option><option value="249">Climb Technology - C&amp;C Support</option><option value="815">Climb Technology - CCPA</option><option value="224">Climb Technology - Demo</option><option value="352">Climb Technology - Design (NB)</option><option value="814">Climb Technology - Infrastructure Upgrades</option><option value="265">Climb Technology - OE Arch</option><option value="259">Climb Technology - OE Dev</option><option value="267">Climb Technology - OE Maint</option><option value="268">Climb Technology - OE Overhead</option><option value="260">Climb Technology - OE PM</option><option value="289">Climb Technology - OE QA</option><option value="261">Climb Technology - OE Support</option><option value="359">Climb Technology - Placeholder (GC)</option><option value="358">Climb Technology - Placeholder (MAC)</option><option value="360">Climb Technology - Placeholder (Robbins)</option><option value="198">Climb Technology - PM</option><option value="214">Climb Technology - QA</option><option value="210">Climb Technology - S4S Dev</option><option value="211">Climb Technology - S4S Maint</option><option value="288">Climb Technology - S4S QA</option><option value="244">Climb Technology - S4S Support</option><option value="303">Climb Technology - Wiki</option></optgroup><optgroup label="College Board"><option value="755">College Board - DevOps</option><option value="673">College Board - E-book Dev</option><option value="674">College Board - E-book Overhead</option><option value="672">College Board - E-book QA</option><option value="675">College Board - E-book UI/UX</option><option value="836">College Board - E-Book UI/UX (legacy dev)</option><option value="837">College Board - E-Book UI/UX (new dev)</option><option value="834">College Board - FAIDS</option><option value="810">College Board - Hiring</option><option value="795">College Board - Hive</option><option value="826">College Board - NSAT</option><option value="796">College Board - Support</option></optgroup><optgroup label="Corporate Fuel"><option value="711">Corporate Fuel - Assessment</option></optgroup><optgroup label="EnergyWatch"><option value="748">EnergyWatch - Dev</option><option value="747">EnergyWatch - PM</option></optgroup><optgroup label="Essence"><option value="798">Essence - Discovery</option></optgroup><optgroup label="Fannie Mae"><option value="853">Fannie Mae - Ref Arch</option></optgroup><optgroup label="FSNS"><option value="709">FSNS - CASS Assessment</option><option value="664">FSNS - Customer Portal Dev</option><option value="630">FSNS - Customer Portal Discovery Dev</option><option value="631">FSNS - Customer Portal Discovery PM</option><option value="632">FSNS - Customer Portal Discovery UI</option><option value="761">FSNS - Customer Portal Maint - Dev</option><option value="762">FSNS - Customer Portal Maint - Overhead</option><option value="763">FSNS - Customer Portal Maint - PM</option><option value="666">FSNS - Customer Portal Overhead</option><option value="665">FSNS - Customer Portal PM</option><option value="668">FSNS - Customer Portal QA</option><option value="667">FSNS - Customer Portal UI</option><option value="862">FSNS - Dev Invest</option><option value="820">FSNS - Email Notifications</option><option value="817">FSNS - Emma</option><option value="818">FSNS - Gridsheets</option><option value="819">FSNS - Import Service</option><option value="821">FSNS - Overhead</option><option value="832">FSNS - Paperless</option><option value="822">FSNS - PM</option><option value="860">FSNS - PM Invest</option><option value="816">FSNS - Portal</option><option value="833">FSNS - Sample Grouping</option><option value="847">FSNS - Sample Submission</option></optgroup><optgroup label="FunnelFire"><option value="301">FunnelFire - Dev</option><option value="302">FunnelFire - PM</option></optgroup><optgroup label="Geisinger Health"><option value="704">Geisinger Health POC - Dev</option><option value="705">Geisinger Health POC - Overhead</option></optgroup><optgroup label="Goddard Systems"><option value="848">Goddard - After Hours Support</option><option value="688">Goddard - Alert Workflows</option><option value="297">Goddard - Care.com</option><option value="807">Goddard - Consumer Website School Data Job</option><option value="111">Goddard - Corporate Reporting</option><option value="708">Goddard - EIP Enhancements SCR001</option><option value="685">Goddard - FMS 2.0 Class Lists</option><option value="150">Goddard - FMS Accounting</option><option value="152">Goddard - FMS Admin</option><option value="148">Goddard - FMS Class Lists</option><option value="296">Goddard - FMS Deployments</option><option value="153">Goddard - FMS Electronic Payments</option><option value="149">Goddard - FMS Employees</option><option value="147">Goddard - FMS Families</option><option value="146">Goddard - FMS Leads</option><option value="105">Goddard - FMS Maintenance</option><option value="89">Goddard - FMS PM</option><option value="154">Goddard - FMS Systino</option><option value="151">Goddard - FMS Tasks</option><option value="155">Goddard - FMS Vertical Response</option><option value="557">Goddard - Interviews</option><option value="300">Goddard - Microsites</option><option value="156">Goddard - Parent Portal</option><option value="581">Goddard - Parent Segmentation</option><option value="592">Goddard - QA Review</option><option value="72">Goddard - Sharepoint</option><option value="225">Goddard - Special Projects</option><option value="299">Goddard - Tadpoles</option><option value="169">Goddard - Time &amp; Attendance</option><option value="73">Goddard - Website</option><option value="792">Goddard - Website Stabilization Support</option><option value="298">Goddard - Yext</option></optgroup><optgroup label="Greystone"><option value="555">Greystone - Support/Enhancements/Updates</option><option value="560">Greystone - Underwriting Model API</option><option value="546">Greystone- FHA Contacts Pilot</option><option value="554">Greystone- Underwriting Model Discovery</option></optgroup><optgroup label="Gymboree"><option value="493">Gymboree - Reporting Data Warehouse</option><option value="416">Gymboree - Site Rebuild Design</option><option value="422">Gymboree Classes - Dev</option><option value="423">Gymboree Classes - Maint</option><option value="424">Gymboree Classes - PM</option><option value="425">Gymboree QFR - Dev</option><option value="426">Gymboree QFR - Maint</option><option value="427">Gymboree QFR - PM</option></optgroup><optgroup label="Hogan Lovells"><option value="695">Hogan Lovells - 3E Dev</option><option value="697">Hogan Lovells - 3E Overhead</option><option value="696">Hogan Lovells - 3E PM</option><option value="647">Hogan Lovells - BI\DW Discovery</option><option value="662">Hogan Lovells - Dev</option><option value="808">Hogan Lovells - GAR Finance Discounted</option><option value="809">Hogan Lovells - GAR Finance Non-Billable</option><option value="661">Hogan Lovells - Overhead</option><option value="660">Hogan Lovells - PM</option><option value="680">Hogan Lovells - Power BI Implementation Support</option><option value="744">Hogan Lovells - Support and Maint Dev</option><option value="745">Hogan Lovells - Support and Maint Overhead</option><option value="746">Hogan Lovells - Support and Maint PM</option><option value="772">Hogan Lovells – GAR Finance Dev</option><option value="773">Hogan Lovells – GAR Finance Overhead</option><option value="774">Hogan Lovells – GAR Finance PM</option></optgroup><optgroup label="Inovalon"><option value="480">Inovalon - Dev</option></optgroup><optgroup label="JBS"><option value="852">JBS - FFCRA Family Leave</option><option value="851">JBS - FFCRA Sick Leave</option><option value="337">JBS - Interviews</option><option value="811">JBS - Jury Duty</option><option value="764">JBS - Marketing</option><option value="839">JBS - Marketing Account Based</option><option value="840">JBS - Marketing Content Based</option><option value="841">JBS - Marketing Event Based</option><option value="842">JBS - Marketing Overhead</option><option value="843">JBS - Marketing Website</option><option value="8" selected="selected">JBS - Paid Holiday</option><option value="338">JBS - Presales Estimates</option><option value="9" selected="selected">JBS - PTO</option><option value="828" selected="selected">JBS - PTO Exchange</option><option value="216">JBS - Redmine</option><option value="463">JBS - Sales</option><option value="273">JBS - Timetrack</option><option value="400">JBS - Training</option><option value="10" selected="selected">JBS Non-Billable</option></optgroup><optgroup label="Knowledge in Practice"><option value="136">Pereira - KIP</option></optgroup><optgroup label="Level Interactive"><option value="542">Level Interactive - Dev</option></optgroup><optgroup label="Music and Arts"><option value="205">MAC - 2013 Online Rentals</option><option value="206">MAC - 2013 OPUS</option><option value="472">MAC - 2015 ECom UI</option><option value="440">MAC - 2015 OPUS</option><option value="717">MAC - AD SSO Bugs</option><option value="716">MAC - AD SSO Dev</option><option value="718">MAC - AD SSO PM</option><option value="561">MAC - ADA</option><option value="829">MAC - ASE v2 Dev</option><option value="831">MAC - ASE v2 Overhead</option><option value="830">MAC - ASE v2 PM</option><option value="827">MAC - Azure Network Support</option><option value="282">MAC - Cart Dev</option><option value="285">MAC - Cart UT</option><option value="813">MAC - CCPA</option><option value="283">MAC - Checkout Dev</option><option value="286">MAC - Checkout UT</option><option value="266">MAC - Climb OE Arch</option><option value="262">MAC - Climb OE Development</option><option value="263">MAC - Climb OE Implementation</option><option value="269">MAC - Climb OE Maint</option><option value="270">MAC - Climb OE Overhead</option><option value="257">MAC - Climb OE PM</option><option value="306">MAC - Climb OE Setup</option><option value="264">MAC - Climb OE Support</option><option value="275">MAC - Climb S4S Development</option><option value="276">MAC - Climb S4S Implementation</option><option value="277">MAC - Climb S4S PM</option><option value="278">MAC - Climb S4S Support</option><option value="95">MAC - Commercial Accounts</option><option value="80">MAC - Dev</option><option value="714">MAC - FiPay Bugs</option><option value="713">MAC - FiPay Dev</option><option value="715">MAC - FiPay PM</option><option value="194">MAC - Gift Certificates</option><option value="812">MAC - Infrastructure Upgrades</option><option value="403">MAC - Last Updated Dates</option><option value="81">MAC - Maintenance</option><option value="319">MAC - My Acct/Login</option><option value="414">MAC - OLR Affiliate</option><option value="281">MAC - OLR Wizard Dev</option><option value="287">MAC - OLR Wizard UT</option><option value="93">MAC - Online Rentals</option><option value="687">MAC - Pager Base Hours</option><option value="361">MAC - PM</option><option value="849">MAC - PM Transition</option><option value="351">MAC - Portal Dev</option><option value="349">MAC - Portal Maint</option><option value="350">MAC - Portal PM</option><option value="336">MAC - Pref Editor</option><option value="402">MAC - Pref Editor Mods</option><option value="320">MAC - PST</option><option value="791">MAC - PST Additional Dev</option><option value="94">MAC - School Code Profiles</option><option value="99">MAC - Special Order</option><option value="754">MAC - Umbraco Bugs</option><option value="752">MAC - Umbraco Dev</option><option value="753">MAC - Umbraco PM</option><option value="634">MAC - Virto Bugs</option><option value="766">MAC - Virto CR Non-Phase 2 Bugs</option><option value="765">MAC - Virto CR Non-Phase 2 Dev</option><option value="767">MAC - Virto CR Non-Phase 2 PM</option><option value="637">MAC - Virto Dev</option><option value="638">MAC - Virto Discovery</option><option value="636">MAC - Virto Overhead</option><option value="635">MAC - Virto PM</option><option value="790">MAC - Virto Warranty</option><option value="639">MAC – Paperless Rentals Bugs</option><option value="642">MAC – Paperless Rentals Dev</option><option value="641">MAC – Paperless Rentals Overhead</option><option value="640">MAC – Paperless Rentals PM</option><option value="291">MAC/WWBW - Climb C&amp;C Dev</option><option value="292">MAC/WWBW - Climb C&amp;C Maint</option><option value="293">MAC/WWBW - Climb C&amp;C PM</option><option value="401">MAC/WWBW - Climb C&amp;C Support</option></optgroup><optgroup label="Musician&#39;s Friend"><option value="234">GC - Climb C&amp;C Development</option><option value="233">GC - Climb C&amp;C Implementation</option><option value="235">GC - Climb C&amp;C Support</option><option value="231">GC - Climb S4S Development</option><option value="230">GC - Climb S4S Implementation</option><option value="274">GC - Climb S4S PM</option><option value="232">GC - Climb S4S Support</option><option value="321">GC - OMS</option><option value="143">MF - Accertify</option><option value="167">MF - CC Expert Profiles</option><option value="309">MF - Documentation Phase 1</option><option value="310">MF - Documentation Phase 1 PM</option><option value="222">MF - GC Dev</option><option value="184">MF - GC iOS App </option><option value="106">MF - GC Microsites</option><option value="421">MF - GC Migration</option><option value="207">MF - Keep in Store</option><option value="67">MF - MAC Dev</option><option value="189">MF - MAC Microsites</option><option value="209">MF - MAC Search &amp; Browse</option><option value="223">MF - MFI Dev</option><option value="220">MF - Prod Support</option><option value="221">MF - Prod Support OH</option><option value="208">MF - Scene 7</option><option value="308">MF - Used Intake</option><option value="219">MF - WWBW Dev</option><option value="312">MF/M123 - Climb C&amp;C Dev</option><option value="271">MF/M123 - Climb C&amp;C Implementation</option><option value="290">MF/M123 - Climb C&amp;C Maint</option><option value="272">MF/M123 - Climb C&amp;C PM</option><option value="314">MF/M123 - Climb C&amp;C Support</option></optgroup><optgroup label="NLC"><option value="845">NLC - Python Django Upgrade Dev</option><option value="846">NLC - Python Django Upgrade PM</option></optgroup><optgroup label="Noodle"><option value="740">Noodle Academic Insights</option></optgroup><optgroup label="OneHomeCare"><option value="850">OneHomeCare - Cloud Discovery</option><option value="823">OneHomeCare - Dev</option><option value="824">OneHomeCare - PM</option></optgroup><optgroup label="PeeriQ"><option value="453">PeeriQ - Design</option><option value="452">PeeriQ - Dev</option><option value="469">PeeriQ - Other</option><option value="455">PeeriQ - Overhead</option><option value="454">PeeriQ - PM</option><option value="456">PeeriQ - QA</option><option value="468">PeeriQ - T&amp;M</option></optgroup><optgroup label="Pet360"><option value="137">Pet360 - Dev</option><option value="140">Pet360 - Maintenance</option><option value="188">Pet360 - PetMD U</option><option value="165">Pet360 - PFD Perf</option><option value="141">Pet360 - PM</option></optgroup><optgroup label="Petco"><option value="787">Petco - .com Experience</option><option value="786">Petco - At Home Services</option><option value="797">Petco - AWS Acceleration</option><option value="861">Petco - Benefits</option><option value="678">Petco - Cloud API Dev</option><option value="679">Petco - Cloud API Overhead</option><option value="838">Petco - HomeHealth Dev</option><option value="677">Petco - Interviews</option><option value="690">Petco - Membership Squad</option><option value="663">Petco - Mobile and API Project</option><option value="803">Petco - Mobile CI Dev</option><option value="693">Petco - Mobile Squad</option><option value="743">Petco - OneLogin Auth</option><option value="649">Petco - Other Projects</option><option value="742">Petco - Pet Golden Record</option><option value="712">Petco - Petcoach DFS Migration</option><option value="702">Petco - Petcoach Squad Commerce</option><option value="689">Petco - Petcoach Squad In Store</option><option value="703">Petco - Petcoach Squad Rx</option><option value="707">Petco - POS</option><option value="788">Petco - Retail Transformation</option><option value="644">Petco - Selfie Dev</option><option value="645">Petco - Selfie Overhead</option><option value="648">Petco - Selfie QA</option><option value="692">Petco - Services Squad</option><option value="785">Petco - Store Ops</option><option value="710">Petco - SXSW</option><option value="855">Petco - Time Out</option><option value="669">Petco - Upload Dev</option><option value="670">Petco - Upload Overhead</option><option value="750">Petco - WCS 8 Upgrade</option><option value="844">Petco - Wellness</option></optgroup><optgroup label="PetSmart"><option value="467">PETM - Hotel Discovery</option><option value="658">PETM API E-mail Integration</option><option value="544">PETM CF Reskin Design</option><option value="543">PETM CF Reskin Dev</option><option value="545">PETM CF Reskin PM</option><option value="617">PETM Initial Phase Transition Support</option><option value="676">PETM Integration Auditing for SMS</option><option value="682">PETM KSER-414 Find Next Avail Appts</option><option value="681">PETM KSER-436 Groomery Email Support</option><option value="575">PETM Mobile App Project Design</option><option value="574">PETM Mobile App Project Dev</option><option value="576">PETM Mobile App Project PM</option><option value="616">PETM Mobile Appointments</option><option value="633">PETM Post Transition Support</option><option value="659">PETM Rebooking Discount</option><option value="621">PETM Salesforce Integration - Dev</option><option value="623">PETM Salesforce Integration - Overhead</option><option value="622">PETM Salesforce Integration - PM</option><option value="567">PETM SocialLogin Addendum</option><option value="535">PETM SocialLogin Design</option><option value="534">PETM SocialLogin Dev</option><option value="536">PETM SocialLogin PM</option><option value="624">PETM Vibes Integration - Dev</option><option value="626">PETM Vibes Integration - Overhead</option><option value="625">PETM Vibes Integration - PM</option></optgroup><optgroup label="PMB Group"><option value="777">Automall Rent2Own Dev</option><option value="775">Automall Rent2Own Discovery</option><option value="779">Automall Rent2Own Overhead</option><option value="776">Automall Rent2Own PM</option><option value="778">Automall Rent2Own UI/UX</option><option value="706">PMB Group - Automall Legacy App &amp; Site Support</option></optgroup><optgroup label="Preschool2Me"><option value="362">Preschool2Me - Integration</option></optgroup><optgroup label="Presidio"><option value="651">Presidio - CHOP Consulting</option><option value="657">Presidio - Sandvik</option><option value="683">Presidio - Vertex AWS Assessment</option><option value="684">Presidio - Vertex BI Assessment</option></optgroup><optgroup label="Press Ganey"><option value="731">Press Ganey - Administrative PM</option><option value="723">Press Ganey - Consulting Dev</option><option value="724">Press Ganey - Consulting PM</option><option value="727">Press Ganey - Discovery Dev</option><option value="728">Press Ganey - Discovery PM</option><option value="729">Press Ganey - Env Setup Dev</option><option value="730">Press Ganey - Evn Setup PM</option><option value="719">Press Ganey - Home Dev</option><option value="720">Press Ganey - Home PM</option><option value="531">Press Ganey - Maintenance &amp; Support</option><option value="725">Press Ganey - Resources Dev</option><option value="726">Press Ganey - Resources PM</option><option value="517">Press Ganey - Sitefinity</option><option value="721">Press Ganey - Solutions Dev</option><option value="722">Press Ganey - Solutions PM</option><option value="867">Press Ganey - Transition</option><option value="643">Press Ganey Dev - Events Enhancements</option><option value="784">Press Ganey Dev - Q4 API</option><option value="530">Press Ganey Dev - Site Enhancements</option><option value="529">Press Ganey Dev - Speakers Bureau</option></optgroup><optgroup label="Robbins"><option value="553">Robbins - ADA</option><option value="318">Robbins - Climb OE Discovery</option><option value="228">Robbins - Climb S4S Development</option><option value="227">Robbins - Climb S4S Implementation</option><option value="237">Robbins - Climb S4S PM</option><option value="229">Robbins - Climb S4S Support</option><option value="508">Robbins - Costa Mesa Addition</option><option value="85">Robbins - ECommerce</option><option value="464">Robbins - Google Tag Manager</option><option value="593">Robbins - Infrastructure </option><option value="86">Robbins - Integration</option><option value="610">Robbins - Internal Web Dev Support</option><option value="506">Robbins - IT</option><option value="187">Robbins - Maintenance</option><option value="186">Robbins - New Development</option><option value="470">Robbins - Order Management</option><option value="311">Robbins - PM</option><option value="462">Robbins - Portal Project</option><option value="322">Robbins - Responsive Site</option><option value="386">Robbins - Responsive Site Dev</option><option value="387">Robbins - Responsive Site Dsg</option><option value="388">Robbins - Responsive Site OH</option><option value="385">Robbins - Responsive Site PM</option><option value="471">Robbins - VDVR </option></optgroup><optgroup label="Ropes &amp; Gray"><option value="749">Ropes &amp; Gray - Assessment</option><option value="793">Ropes &amp; Gray - Outside Counsel Guidelines</option></optgroup><optgroup label="Sandisk"><option value="307">SanDisk</option><option value="466">Sandisk - Everdrive</option></optgroup><optgroup label="Scripta"><option value="794">Scripta</option></optgroup><optgroup label="SECU"><option value="620">SECU - Non-billable</option><option value="619">SECU - Overhead</option><option value="618">SECU - PM</option><option value="438">SECU - Reporting</option></optgroup><optgroup label="Selex"><option value="492">Selex</option><option value="835">Selex - AWS</option><option value="756">Selex - Backend Remediation</option><option value="556">Selex - Phase 3</option></optgroup><optgroup label="Siddhi"><option value="854">Siddhi - Clearance Work</option></optgroup><optgroup label="SoMo"><option value="168">SoMo</option></optgroup><optgroup label="SonicBids"><option value="528">Sonic Bids - ArtistData Dev</option><option value="527">Sonic Bids - ArtistData PM</option><option value="520">SonicBids - Award Messaging Dev</option><option value="507">SonicBids - Dev</option><option value="518">SonicBids - PM</option></optgroup><optgroup label="SponsorHub"><option value="347">SponsorHub -  SD Setup</option><option value="334">SponsorHub - API Discovery</option><option value="335">SponsorHub - API PM</option><option value="324">SponsorHub - Discovery</option><option value="325">SponsorHub - PHP Legacy App Dev</option><option value="326">SponsorHub - PHP Legacy App Maint</option><option value="327">SponsorHub - PM</option><option value="332">SponsorHub - Proposal Vetting Dev</option><option value="331">SponsorHub - Proposal Vetting Maint</option><option value="333">SponsorHub - Proposal Vetting PM</option><option value="339">SponsorHub - SD Arch</option><option value="353">SponsorHub - SD CO</option><option value="340">SponsorHub - SD Dev</option><option value="379">SponsorHub - SD Dev TM</option><option value="341">SponsorHub - SD Implementation</option><option value="342">SponsorHub - SD Maint</option><option value="380">SponsorHub - SD Maint   TM</option><option value="343">SponsorHub - SD Overhead</option><option value="381">SponsorHub - SD Overhead TM</option><option value="344">SponsorHub - SD PM</option><option value="382">SponsorHub - SD PM  TM</option><option value="345">SponsorHub - SD PST</option><option value="346">SponsorHub - SD QA</option><option value="383">SponsorHub - SD Setup  TM</option><option value="348">SponsorHub - SD Support</option><option value="384">SponsorHub - SD Support  TM</option></optgroup><optgroup label="Starfish"><option value="51">Starfish - General</option></optgroup><optgroup label="SummitSync"><option value="789">Summit Sync Infrastructure Audit</option><option value="741">SummitSync Calendar Functionality</option></optgroup><optgroup label="Take Care"><option value="157">Take Care - iCenter</option><option value="204">Take Care - Invoice Coding SOW</option><option value="203">Take Care - Maintenance SOW</option><option value="226">Take Care - Support</option></optgroup><optgroup label="Tinker Tailor"><option value="323">Tinker Tailor</option></optgroup><optgroup label="Total Wine"><option value="590">Total Wine - CAPEX</option><option value="579">Total Wine - Dev</option><option value="589">Total Wine - OPEX</option><option value="577">Total Wine - Overhead</option><option value="578">Total Wine - PM</option><option value="583">Total Wine - Post POC Dev</option><option value="587">Total Wine - Post POC Overhead</option><option value="586">Total Wine - Post POC Test</option><option value="582">Total Wine - Support</option></optgroup><optgroup label="TSP"><option value="465">TSP - Design</option></optgroup><optgroup label="USDA"><option value="585">USDA - Development</option><option value="597">USDA - Existing App Support</option><option value="584">USDA - PM</option><option value="596">USDA - UI/UX</option></optgroup><optgroup label="Utrecht"><option value="159">Utrecht - Dev</option><option value="176">Utrecht - FiftyOne Dev</option><option value="160">Utrecht - Maint</option></optgroup><optgroup label="Waypoint"><option value="751">Waypoint - One Homecare</option></optgroup><optgroup label="Weems Design Studio"><option value="691">Interviews</option></optgroup><optgroup label="WineAccess"><option value="448">WineAccess - Design</option><option value="445">WineAccess - Dev</option><option value="446">WineAccess - Overhead</option><option value="447">WineAccess - PM</option><option value="449">WineAccess - QA</option></optgroup><optgroup label="Wineshipping"><option value="609">Wineshipping - Access Maintenance</option><option value="608">Wineshipping - Access Mandrill Conversion</option><option value="501">Wineshipping - API</option><option value="513">Wineshipping - Datex Integration</option><option value="595">Wineshipping - Email Narvar</option><option value="594">Wineshipping - Inventory Movement Form</option><option value="526">Wineshipping - Mandrill Email Project</option><option value="533">Wineshipping - Overhead</option><option value="532">Wineshipping - Portal</option><option value="573">Wineshipping - UPS</option><option value="10000" selected="selected">Test Project</option></optgroup></select></th>
+        <th class="head3">Hours*</th>
+        <th class="head4">Description*</th>
+        <th class="head5">Client Ref</th>
+        <th class="head6">Tags</th>
+        <th class="head7"> </th>
+    <th class="head8"> </th>
+      </tr>
+    </thead>
+
+
+</table>
+
+<div class="tableholder">
+<table cellpadding="0" cellspacing="0" border="0" class="scrolltable">
+    <tbody id="item-body">
+
+
+        <tr class="week-tag" valign="top"><td colspan="5">05/11/2020</td><td colspan="3"></td></tr>
+
+        <tr valign=top id="item-397097">
+  <td class="date-cell"><input type="hidden" name="id" value="397097"><input type="text" class="datepicker" name="log_date" value="05/11/2020" /></td>
+  <td class="projects"><select name="project"><option value="693" selected="selected">Test Project</option></select></td>
+  <td class="hours-cell"><input type="text" class="hour-input" name="hours_worked" value="8.00" autocomplete="off" /></td>
+  <td class="description-cell"><textarea class="description-text" name="description">Architecture</textarea></td>
+  <td>
+      <ul class="cr-list">
+          <li><label>Ticket</label> <input name="ticket" type="text" class="cr1 cref" value=""/></li>
+          <li><label>Billing Type</label> <select name="billing_type">
+                  <option value="">--</option>
+                  <option value="F">F</option>
+                  <option value="B">B</option>
+                  <option value="BF">BF</option>
+                  <option value="M" selected="selected">M</option>
+              </select>
+          </li>
+          <li><label>Parent Ticket</label> <input name="parent_ticket" type="text" class="cr3 cref" value="" /></li>
+      </ul>
+  </td>
+  <td><ul id="tags-397097" data-name="tags-" class="tags tagit"><li class="tagit-new"><input type="text" class="tagit-input ui-autocomplete-input" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true"></li><ul class="ui-autocomplete ui-menu ui-widget ui-widget-content ui-corner-all" role="listbox" aria-activedescendant="ui-active-menuitem" style="z-index: 1; top: 0px; left: 0px; display: none;"></ul></ul></td>
+  <td class="listing-options sort-options">
+      <ul>
+          <li class="sort-up"><button id="up-397097" title="Sort Up"></button></li>
+          <li class="sort-down"><button id="down-397097" title="Sort Down"></button></li>
+      </ul>
+  </td>
+<td class="listing-options">
+      <ul>
+          <li class="copy"><button id="copy-397097" title="Copy"></button></li>
+          <li class="save disabled"><button disabled="disabled" id="save-397097" title="Save"></button></li>
+          <li class="delete"><button id="delete-397097" title="Delete"></button></li>
+          <li class="save-entry"><button id="bookmark-397097" title="Create Saved Entry"></button></li>
+      </ul>
+  </td>
+</tr>
+
+
+
+        <tr class="week-tag" valign="top"><td colspan="5">05/12/2020</td><td colspan="3"></td></tr>
+
+        <tr valign=top id="item-397096">
+  <td class="date-cell"><input type="hidden" name="id" value="397096"><input type="text" class="datepicker" name="log_date" value="05/12/2020" /></td>
+  <td class="projects"><select name="project"><option value="693" selected="selected">Test Project</option></select></td>
+  <td class="hours-cell"><input type="text" class="hour-input" name="hours_worked" value="8.00" autocomplete="off" /></td>
+  <td class="description-cell"><textarea class="description-text" name="description">Architecture</textarea></td>
+  <td>
+      <ul class="cr-list">
+          <li><label>Ticket</label> <input name="ticket" type="text" class="cr1 cref" value=""/></li>
+          <li><label>Billing Type</label> <select name="billing_type">
+                  <option value="">--</option>
+                  <option value="F">F</option>
+                  <option value="B">B</option>
+                  <option value="BF">BF</option>
+                  <option value="M" selected="selected">M</option>
+              </select>
+          </li>
+          <li><label>Parent Ticket</label> <input name="parent_ticket" type="text" class="cr3 cref" value="" /></li>
+      </ul>
+  </td>
+  <td><ul id="tags-397096" data-name="tags-" class="tags tagit"><li class="tagit-new"><input type="text" class="tagit-input ui-autocomplete-input" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true"></li><ul class="ui-autocomplete ui-menu ui-widget ui-widget-content ui-corner-all" role="listbox" aria-activedescendant="ui-active-menuitem" style="z-index: 1; top: 0px; left: 0px; display: none;"></ul></ul></td>
+  <td class="listing-options sort-options">
+      <ul>
+          <li class="sort-up"><button id="up-397096" title="Sort Up"></button></li>
+          <li class="sort-down"><button id="down-397096" title="Sort Down"></button></li>
+      </ul>
+  </td>
+<td class="listing-options">
+      <ul>
+          <li class="copy"><button id="copy-397096" title="Copy"></button></li>
+          <li class="save disabled"><button disabled="disabled" id="save-397096" title="Save"></button></li>
+          <li class="delete"><button id="delete-397096" title="Delete"></button></li>
+          <li class="save-entry"><button id="bookmark-397096" title="Create Saved Entry"></button></li>
+      </ul>
+  </td>
+</tr>
+
+
+
+        <tr class="week-tag" valign="top"><td colspan="5">05/13/2020</td><td colspan="3"></td></tr>
+
+        <tr valign=top id="item-397095">
+  <td class="date-cell"><input type="hidden" name="id" value="397095"><input type="text" class="datepicker" name="log_date" value="05/13/2020" /></td>
+  <td class="projects"><select name="project"><option value="693" selected="selected">Test Project</option></select></td>
+  <td class="hours-cell"><input type="text" class="hour-input" name="hours_worked" value="8.00" autocomplete="off" /></td>
+  <td class="description-cell"><textarea class="description-text" name="description">Architecture</textarea></td>
+  <td>
+      <ul class="cr-list">
+          <li><label>Ticket</label> <input name="ticket" type="text" class="cr1 cref" value=""/></li>
+          <li><label>Billing Type</label> <select name="billing_type">
+                  <option value="">--</option>
+                  <option value="F">F</option>
+                  <option value="B">B</option>
+                  <option value="BF">BF</option>
+                  <option value="M" selected="selected">M</option>
+              </select>
+          </li>
+          <li><label>Parent Ticket</label> <input name="parent_ticket" type="text" class="cr3 cref" value="" /></li>
+      </ul>
+  </td>
+  <td><ul id="tags-397095" data-name="tags-" class="tags tagit"><li class="tagit-new"><input type="text" class="tagit-input ui-autocomplete-input" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true"></li><ul class="ui-autocomplete ui-menu ui-widget ui-widget-content ui-corner-all" role="listbox" aria-activedescendant="ui-active-menuitem" style="z-index: 1; top: 0px; left: 0px; display: none;"></ul></ul></td>
+  <td class="listing-options sort-options">
+      <ul>
+          <li class="sort-up"><button id="up-397095" title="Sort Up"></button></li>
+          <li class="sort-down"><button id="down-397095" title="Sort Down"></button></li>
+      </ul>
+  </td>
+<td class="listing-options">
+      <ul>
+          <li class="copy"><button id="copy-397095" title="Copy"></button></li>
+          <li class="save disabled"><button disabled="disabled" id="save-397095" title="Save"></button></li>
+          <li class="delete"><button id="delete-397095" title="Delete"></button></li>
+          <li class="save-entry"><button id="bookmark-397095" title="Create Saved Entry"></button></li>
+      </ul>
+  </td>
+</tr>
+
+
+
+        <tr class="week-tag" valign="top"><td colspan="5">05/14/2020</td><td colspan="3"></td></tr>
+
+        <tr valign=top id="item-397094">
+  <td class="date-cell"><input type="hidden" name="id" value="397094"><input type="text" class="datepicker" name="log_date" value="05/14/2020" /></td>
+  <td class="projects"><select name="project"><option value="693" selected="selected">Test Project</option></select></td>
+  <td class="hours-cell"><input type="text" class="hour-input" name="hours_worked" value="8.00" autocomplete="off" /></td>
+  <td class="description-cell"><textarea class="description-text" name="description">Architecture</textarea></td>
+  <td>
+      <ul class="cr-list">
+          <li><label>Ticket</label> <input name="ticket" type="text" class="cr1 cref" value=""/></li>
+          <li><label>Billing Type</label> <select name="billing_type">
+                  <option value="">--</option>
+                  <option value="F">F</option>
+                  <option value="B">B</option>
+                  <option value="BF">BF</option>
+                  <option value="M" selected="selected">M</option>
+              </select>
+          </li>
+          <li><label>Parent Ticket</label> <input name="parent_ticket" type="text" class="cr3 cref" value="" /></li>
+      </ul>
+  </td>
+  <td><ul id="tags-397094" data-name="tags-" class="tags tagit"><li class="tagit-new"><input type="text" class="tagit-input ui-autocomplete-input" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true"></li><ul class="ui-autocomplete ui-menu ui-widget ui-widget-content ui-corner-all" role="listbox" aria-activedescendant="ui-active-menuitem" style="z-index: 1; top: 0px; left: 0px; display: none;"></ul></ul></td>
+  <td class="listing-options sort-options">
+      <ul>
+          <li class="sort-up"><button id="up-397094" title="Sort Up"></button></li>
+          <li class="sort-down"><button id="down-397094" title="Sort Down"></button></li>
+      </ul>
+  </td>
+<td class="listing-options">
+      <ul>
+          <li class="copy"><button id="copy-397094" title="Copy"></button></li>
+          <li class="save disabled"><button disabled="disabled" id="save-397094" title="Save"></button></li>
+          <li class="delete"><button id="delete-397094" title="Delete"></button></li>
+          <li class="save-entry"><button id="bookmark-397094" title="Create Saved Entry"></button></li>
+      </ul>
+  </td>
+</tr>
+
+
+
+        <tr class="week-tag" valign="top"><td colspan="5">05/15/2020</td><td colspan="3"></td></tr>
+
+        <tr valign=top id="item-397093">
+  <td class="date-cell"><input type="hidden" name="id" value="397093"><input type="text" class="datepicker" name="log_date" value="05/15/2020" /></td>
+  <td class="projects"><select name="project"><option value="693" selected="selected">Test Project</option></select></td>
+  <td class="hours-cell"><input type="text" class="hour-input" name="hours_worked" value="8.00" autocomplete="off" /></td>
+  <td class="description-cell"><textarea class="description-text" name="description">Architecture</textarea></td>
+  <td>
+      <ul class="cr-list">
+          <li><label>Ticket</label> <input name="ticket" type="text" class="cr1 cref" value=""/></li>
+          <li><label>Billing Type</label> <select name="billing_type">
+                  <option value="">--</option>
+                  <option value="F">F</option>
+                  <option value="B">B</option>
+                  <option value="BF">BF</option>
+                  <option value="M" selected="selected">M</option>
+              </select>
+          </li>
+          <li><label>Parent Ticket</label> <input name="parent_ticket" type="text" class="cr3 cref" value="" /></li>
+      </ul>
+  </td>
+  <td><ul id="tags-397093" data-name="tags-" class="tags tagit"><li class="tagit-new"><input type="text" class="tagit-input ui-autocomplete-input" autocomplete="off" role="textbox" aria-autocomplete="list" aria-haspopup="true"></li><ul class="ui-autocomplete ui-menu ui-widget ui-widget-content ui-corner-all" role="listbox" aria-activedescendant="ui-active-menuitem" style="z-index: 1; top: 0px; left: 0px; display: none;"></ul></ul></td>
+  <td class="listing-options sort-options">
+      <ul>
+          <li class="sort-up"><button id="up-397093" title="Sort Up"></button></li>
+          <li class="sort-down"><button id="down-397093" title="Sort Down"></button></li>
+      </ul>
+  </td>
+<td class="listing-options">
+      <ul>
+          <li class="copy"><button id="copy-397093" title="Copy"></button></li>
+          <li class="save disabled"><button disabled="disabled" id="save-397093" title="Save"></button></li>
+          <li class="delete"><button id="delete-397093" title="Delete"></button></li>
+          <li class="save-entry"><button id="bookmark-397093" title="Create Saved Entry"></button></li>
+      </ul>
+  </td>
+</tr>
+
+
+    </tbody>
+</table>
+</div>
+
+</div>
+
+</div>
+
+<div id="bottom-dock">
+  <div id="dock-toggle">
+      <span class="show-dock">Show Dock</span>
+      <span class="hide-dock">Hide Dock</span>
+      <div class="cover"></div>
+  </div>
+  <div class="bottom-dock-container">
+    <div class="dock-summary">
+      <div class="time-summary">
+        <h3>Week Ending 05/17/2020 Time Summary </h3>
+        <table cellpadding=0 cellspacing=0 border=0 class="hour-summary">
+          <tr class="hour-summary-head" valign=top >
+            <td>Mon</td>
+            <td>Tue</td>
+            <td>Wed</td>
+            <td>Thur</td>
+            <td>Fri</td>
+            <td>Sat</td>
+            <td>Sun</td>
+            <td>Total</td>
+          </tr>
+          <tr valign=top >
+            <td id="sheet-sum-1">0.00</td>
+            <td id="sheet-sum-2">0.00</td>
+            <td id="sheet-sum-3">0.00</td>
+            <td id="sheet-sum-4">0.00</td>
+            <td id="sheet-sum-5">0.00</td>
+            <td id="sheet-sum-6">0.00</td>
+            <td id="sheet-sum-0">0.00</td>
+            <td id="sheet-sum-week">0.00</td>
+          </tr>
+        </table>
+      </div>
+      <div class="project-summary">
+        <h3>Project Summary</h3>
+        <div class="proj-summary">
+        <table cellpadding=0 cellspacing=0 border=0 id="project-summary-table">
+
+          <tr valign=top class="odd">
+            <td>Test Project</td>
+            <td class="project-time">40.00</td>
+          </tr>
+
+        </table>
+        </div>
+        </div>
+
+    </div>
+    <div class="submit-container" style="margin-top: 95px;">
+
+    </div>
+  </div>
+
+
+
+  </div>
+
+
+</div>
+</body>
+<script type="text/javascript" charset="utf-8" src="/static/js/jquery-1.10.1.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="/static/js/jquery-ui-1.10.3.custom.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="/static/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="/static/js/FixedColumns.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="/static/js/tagit.js"></script>
+<script type="text/javascript" charset="utf-8" src="/static/js/jquery.cookie.js"></script>
+<script type="text/javascript" charset="utf-8" src="/static/js/jquery.multiselect.js"></script>
+<script type="text/javascript" charset="utf-8" src="/static/js/jquery.multiselect.filter.js"></script>
+
+<script type="text/javascript">
+var all_projects = {};
+var my_projects = {};
+var item_order = [397097,397096,397095,397094,397093,];
+
+all_projects['799'] = 'Agilis \u002D RFP Response Assistance';
+all_projects['112'] = 'AIMM \u002D Product Hub';
+all_projects['650'] = 'AmTote \u002D Dev';
+all_projects['580'] = 'Arraya Solutions \u002D ACTS Azure SSO Dev';
+all_projects['800'] = 'Backstage \u002D Alternate Profiles Admin';
+all_projects['801'] = 'Backstage \u002D Alternate Profiles Dev';
+all_projects['864'] = 'Backstage \u002D Crew Profiles Admin';
+all_projects['863'] = 'Backstage \u002D Crew Profiles Dev';
+all_projects['439'] = 'Backstage \u002D Dev';
+all_projects['866'] = 'Backstage \u002D Internationalization Admin';
+all_projects['865'] = 'Backstage \u002D Internationalization Dev';
+all_projects['566'] = 'Backstage \u002D iOS Support';
+all_projects['562'] = 'Backstage \u002D iOS Support Admin';
+all_projects['563'] = 'Backstage \u002D iOS Support Bugs';
+all_projects['564'] = 'Backstage \u002D iOS Support Dev';
+all_projects['565'] = 'Backstage \u002D iOS Support PM';
+all_projects['174'] = 'Backstage \u002D Maint';
+all_projects['652'] = 'Backstage \u002D New Subscription Flow Admin';
+all_projects['653'] = 'Backstage \u002D New Subscription Flow Bugs';
+all_projects['654'] = 'Backstage \u002D New Subscription Flow Dev';
+all_projects['655'] = 'Backstage \u002D New Subscription Flow PM';
+all_projects['656'] = 'Backstage \u002D New Subscription Flow Support';
+all_projects['170'] = 'Backstage \u002D PM';
+all_projects['806'] = 'Backstage \u002D SCA';
+all_projects['780'] = 'Backstage \u002D Scheduling Tools Admin';
+all_projects['781'] = 'Backstage \u002D Scheduling Tools Bugs';
+all_projects['782'] = 'Backstage \u002D Scheduling Tools Dev';
+all_projects['783'] = 'Backstage \u002D Scheduling Tools Support';
+all_projects['759'] = 'Backstage \u002D Self Cancellation Admin';
+all_projects['758'] = 'Backstage \u002D Self Cancellation Bugs';
+all_projects['757'] = 'Backstage \u002D Self Cancellation Dev';
+all_projects['760'] = 'Backstage \u002D Self Cancellation Support';
+all_projects['825'] = 'Backstage \u002D SEO';
+all_projects['859'] = 'Backstage \u002D Shortlists Admin';
+all_projects['858'] = 'Backstage \u002D Shortlists Dev';
+all_projects['185'] = 'Backstage \u002D Support';
+all_projects['768'] = 'Backstage \u002D VAT Admin';
+all_projects['769'] = 'Backstage \u002D VAT Bugs';
+all_projects['770'] = 'Backstage \u002D VAT Dev';
+all_projects['771'] = 'Backstage \u002D VAT Support';
+all_projects['239'] = 'Billboard';
+all_projects['372'] = 'Billboard \u002D BBMA PM';
+all_projects['371'] = 'Billboard \u002D BBMA PM Maint';
+all_projects['434'] = 'Billboard \u002D Chart Manager Dev';
+all_projects['435'] = 'Billboard \u002D Chart Manager PM';
+all_projects['363'] = 'Billboard \u002D MC  PM Maint';
+all_projects['364'] = 'Billboard \u002D MC PM';
+all_projects['240'] = 'Billboard \u002D PM';
+all_projects['378'] = 'Billboard – BBMA CO';
+all_projects['373'] = 'Billboard – BBMA Dev';
+all_projects['374'] = 'Billboard – BBMA Overhead';
+all_projects['376'] = 'Billboard – BBMA PST';
+all_projects['375'] = 'Billboard – BBMA Setup';
+all_projects['377'] = 'Billboard – BBMA Support';
+all_projects['370'] = 'Billboard – MC CO';
+all_projects['365'] = 'Billboard – MC Dev';
+all_projects['366'] = 'Billboard – MC Overhead';
+all_projects['368'] = 'Billboard – MC PST';
+all_projects['367'] = 'Billboard – MC Setup';
+all_projects['369'] = 'Billboard – MC Support';
+all_projects['646'] = 'Blick \u002D Azure';
+all_projects['243'] = 'Blick \u002D PM';
+all_projects['242'] = 'Blick \u002D Services';
+all_projects['241'] = 'Blick \u002D UI';
+all_projects['436'] = 'Blinds M2O \u002D Admin Site';
+all_projects['417'] = 'Blinds M2O \u002D Design';
+all_projects['396'] = 'Blinds M2O \u002D Dev';
+all_projects['394'] = 'Blinds M2O \u002D Discovery';
+all_projects['418'] = 'Blinds M2O \u002D Hardware';
+all_projects['397'] = 'Blinds M2O \u002D Maint';
+all_projects['398'] = 'Blinds M2O \u002D Overhead';
+all_projects['547'] = 'Blinds M2O \u002D Phase 2 Design';
+all_projects['549'] = 'Blinds M2O \u002D Phase 2 Dev';
+all_projects['548'] = 'Blinds M2O \u002D Phase 2 Discovery';
+all_projects['558'] = 'Blinds M2O \u002D Phase 2 e\u002DCommerce';
+all_projects['559'] = 'Blinds M2O \u002D Phase 2 Hardware';
+all_projects['550'] = 'Blinds M2O \u002D Phase 2 Overhead';
+all_projects['551'] = 'Blinds M2O \u002D Phase 2 PM';
+all_projects['552'] = 'Blinds M2O \u002D Phase 2 QA';
+all_projects['395'] = 'Blinds M2O \u002D PM';
+all_projects['419'] = 'Blinds M2O \u002D QA';
+all_projects['356'] = 'Budget Blinds \u002D Discovery';
+all_projects['355'] = 'Booker \u002D Dev';
+all_projects['450'] = 'Booker \u002D PetSmart Dev';
+all_projects['451'] = 'Booker \u002D PetSmart PM';
+all_projects['354'] = 'Booker \u002D PM';
+all_projects['478'] = 'Brevard \u002D Bios Dev';
+all_projects['479'] = 'Brevard \u002D Bios Maintenance';
+all_projects['491'] = 'Brevard \u002D Supoort';
+all_projects['164'] = 'Pereira \u002D HFLaw.com';
+all_projects['162'] = 'Pereira \u002D SF Integration';
+all_projects['444'] = 'Centinel \u002D Design';
+all_projects['442'] = 'Centinel \u002D Dev';
+all_projects['437'] = 'Centinel \u002D Discovery';
+all_projects['441'] = 'Centinel \u002D Overhead';
+all_projects['443'] = 'Centinel \u002D PM';
+all_projects['628'] = 'Centinel Desktop App \u002D Dev';
+all_projects['627'] = 'Centinel Desktop App \u002D Maint';
+all_projects['629'] = 'Centinel Desktop App \u002D Overhead';
+all_projects['502'] = 'Centinel v2 \u002D Design';
+all_projects['503'] = 'Centinel v2 \u002D Dev';
+all_projects['504'] = 'Centinel v2 \u002D Overhead';
+all_projects['515'] = 'Centinel v3 \u002D Dev';
+all_projects['516'] = 'Centinel v3 \u002D Maintenance';
+all_projects['514'] = 'Centinel v3 \u002D Overhead';
+all_projects['329'] = 'Climb \u002D Customer Module Dev';
+all_projects['330'] = 'Climb \u002D Customer Module Maint';
+all_projects['328'] = 'Climb \u002D Customer Module PM';
+all_projects['180'] = 'Climb Technology \u002D Admin Dev';
+all_projects['245'] = 'Climb Technology \u002D Admin Maint';
+all_projects['294'] = 'Climb Technology \u002D Admin Solr Prod Picker';
+all_projects['246'] = 'Climb Technology \u002D Admin Support';
+all_projects['253'] = 'Climb Technology \u002D C\u0026C Chat Dev';
+all_projects['254'] = 'Climb Technology \u002D C\u0026C Chat Maint';
+all_projects['255'] = 'Climb Technology \u002D C\u0026C Chat PM';
+all_projects['256'] = 'Climb Technology \u002D C\u0026C Chat Support';
+all_projects['201'] = 'Climb Technology \u002D C\u0026C Dev';
+all_projects['238'] = 'Climb Technology \u002D C\u0026C FAQ Dev';
+all_projects['251'] = 'Climb Technology \u002D C\u0026C FAQ Maint';
+all_projects['250'] = 'Climb Technology \u002D C\u0026C FAQ PM';
+all_projects['252'] = 'Climb Technology \u002D C\u0026C FAQ Support';
+all_projects['248'] = 'Climb Technology \u002D C\u0026C Maint';
+all_projects['399'] = 'Climb Technology \u002D C\u0026C PM';
+all_projects['249'] = 'Climb Technology \u002D C\u0026C Support';
+all_projects['815'] = 'Climb Technology \u002D CCPA';
+all_projects['224'] = 'Climb Technology \u002D Demo';
+all_projects['352'] = 'Climb Technology \u002D Design (NB)';
+all_projects['814'] = 'Climb Technology \u002D Infrastructure Upgrades';
+all_projects['265'] = 'Climb Technology \u002D OE Arch';
+all_projects['259'] = 'Climb Technology \u002D OE Dev';
+all_projects['267'] = 'Climb Technology \u002D OE Maint';
+all_projects['268'] = 'Climb Technology \u002D OE Overhead';
+all_projects['260'] = 'Climb Technology \u002D OE PM';
+all_projects['289'] = 'Climb Technology \u002D OE QA';
+all_projects['261'] = 'Climb Technology \u002D OE Support';
+all_projects['359'] = 'Climb Technology \u002D Placeholder (GC)';
+all_projects['358'] = 'Climb Technology \u002D Placeholder (MAC)';
+all_projects['360'] = 'Climb Technology \u002D Placeholder (Robbins)';
+all_projects['198'] = 'Climb Technology \u002D PM';
+all_projects['214'] = 'Climb Technology \u002D QA';
+all_projects['210'] = 'Climb Technology \u002D S4S Dev';
+all_projects['211'] = 'Climb Technology \u002D S4S Maint';
+all_projects['288'] = 'Climb Technology \u002D S4S QA';
+all_projects['244'] = 'Climb Technology \u002D S4S Support';
+all_projects['303'] = 'Climb Technology \u002D Wiki';
+all_projects['755'] = 'College Board \u002D DevOps';
+all_projects['673'] = 'College Board \u002D E\u002Dbook Dev';
+all_projects['674'] = 'College Board \u002D E\u002Dbook Overhead';
+all_projects['672'] = 'College Board \u002D E\u002Dbook QA';
+all_projects['675'] = 'College Board \u002D E\u002Dbook UI/UX';
+all_projects['836'] = 'College Board \u002D E\u002DBook UI/UX (legacy dev)';
+all_projects['837'] = 'College Board \u002D E\u002DBook UI/UX (new dev)';
+all_projects['834'] = 'College Board \u002D FAIDS';
+all_projects['810'] = 'College Board \u002D Hiring';
+all_projects['795'] = 'College Board \u002D Hive';
+all_projects['826'] = 'College Board \u002D NSAT';
+all_projects['796'] = 'College Board \u002D Support';
+all_projects['711'] = 'Corporate Fuel \u002D Assessment';
+all_projects['748'] = 'EnergyWatch \u002D Dev';
+all_projects['747'] = 'EnergyWatch \u002D PM';
+all_projects['798'] = 'Essence \u002D Discovery';
+all_projects['853'] = 'Fannie Mae \u002D Ref Arch';
+all_projects['709'] = 'FSNS \u002D CASS Assessment';
+all_projects['664'] = 'FSNS \u002D Customer Portal Dev';
+all_projects['630'] = 'FSNS \u002D Customer Portal Discovery Dev';
+all_projects['631'] = 'FSNS \u002D Customer Portal Discovery PM';
+all_projects['632'] = 'FSNS \u002D Customer Portal Discovery UI';
+all_projects['761'] = 'FSNS \u002D Customer Portal Maint \u002D Dev';
+all_projects['762'] = 'FSNS \u002D Customer Portal Maint \u002D Overhead';
+all_projects['763'] = 'FSNS \u002D Customer Portal Maint \u002D PM';
+all_projects['666'] = 'FSNS \u002D Customer Portal Overhead';
+all_projects['665'] = 'FSNS \u002D Customer Portal PM';
+all_projects['668'] = 'FSNS \u002D Customer Portal QA';
+all_projects['667'] = 'FSNS \u002D Customer Portal UI';
+all_projects['862'] = 'FSNS \u002D Dev Invest';
+all_projects['820'] = 'FSNS \u002D Email Notifications';
+all_projects['817'] = 'FSNS \u002D Emma';
+all_projects['818'] = 'FSNS \u002D Gridsheets';
+all_projects['819'] = 'FSNS \u002D Import Service';
+all_projects['821'] = 'FSNS \u002D Overhead';
+all_projects['832'] = 'FSNS \u002D Paperless';
+all_projects['822'] = 'FSNS \u002D PM';
+all_projects['860'] = 'FSNS \u002D PM Invest';
+all_projects['816'] = 'FSNS \u002D Portal';
+all_projects['833'] = 'FSNS \u002D Sample Grouping';
+all_projects['847'] = 'FSNS \u002D Sample Submission';
+all_projects['301'] = 'FunnelFire \u002D Dev';
+all_projects['302'] = 'FunnelFire \u002D PM';
+all_projects['704'] = 'Geisinger Health POC \u002D Dev';
+all_projects['705'] = 'Geisinger Health POC \u002D Overhead';
+all_projects['848'] = 'Goddard \u002D After Hours Support';
+all_projects['688'] = 'Goddard \u002D Alert Workflows';
+all_projects['297'] = 'Goddard \u002D Care.com';
+all_projects['807'] = 'Goddard \u002D Consumer Website School Data Job';
+all_projects['111'] = 'Goddard \u002D Corporate Reporting';
+all_projects['708'] = 'Goddard \u002D EIP Enhancements SCR001';
+all_projects['685'] = 'Goddard \u002D FMS 2.0 Class Lists';
+all_projects['150'] = 'Goddard \u002D FMS Accounting';
+all_projects['152'] = 'Goddard \u002D FMS Admin';
+all_projects['148'] = 'Goddard \u002D FMS Class Lists';
+all_projects['296'] = 'Goddard \u002D FMS Deployments';
+all_projects['153'] = 'Goddard \u002D FMS Electronic Payments';
+all_projects['149'] = 'Goddard \u002D FMS Employees';
+all_projects['147'] = 'Goddard \u002D FMS Families';
+all_projects['146'] = 'Goddard \u002D FMS Leads';
+all_projects['105'] = 'Goddard \u002D FMS Maintenance';
+all_projects['89'] = 'Goddard \u002D FMS PM';
+all_projects['154'] = 'Goddard \u002D FMS Systino';
+all_projects['151'] = 'Goddard \u002D FMS Tasks';
+all_projects['155'] = 'Goddard \u002D FMS Vertical Response';
+all_projects['557'] = 'Goddard \u002D Interviews';
+all_projects['300'] = 'Goddard \u002D Microsites';
+all_projects['156'] = 'Goddard \u002D Parent Portal';
+all_projects['581'] = 'Goddard \u002D Parent Segmentation';
+all_projects['592'] = 'Goddard \u002D QA Review';
+all_projects['72'] = 'Goddard \u002D Sharepoint';
+all_projects['225'] = 'Goddard \u002D Special Projects';
+all_projects['299'] = 'Goddard \u002D Tadpoles';
+all_projects['169'] = 'Goddard \u002D Time \u0026 Attendance';
+all_projects['73'] = 'Goddard \u002D Website';
+all_projects['792'] = 'Goddard \u002D Website Stabilization Support';
+all_projects['298'] = 'Goddard \u002D Yext';
+all_projects['555'] = 'Greystone \u002D Support/Enhancements/Updates';
+all_projects['560'] = 'Greystone \u002D Underwriting Model API';
+all_projects['546'] = 'Greystone\u002D FHA Contacts Pilot';
+all_projects['554'] = 'Greystone\u002D Underwriting Model Discovery';
+all_projects['493'] = 'Gymboree \u002D Reporting Data Warehouse';
+all_projects['416'] = 'Gymboree \u002D Site Rebuild Design';
+all_projects['422'] = 'Gymboree Classes \u002D Dev';
+all_projects['423'] = 'Gymboree Classes \u002D Maint';
+all_projects['424'] = 'Gymboree Classes \u002D PM';
+all_projects['425'] = 'Gymboree QFR \u002D Dev';
+all_projects['426'] = 'Gymboree QFR \u002D Maint';
+all_projects['427'] = 'Gymboree QFR \u002D PM';
+all_projects['695'] = 'Hogan Lovells \u002D 3E Dev';
+all_projects['697'] = 'Hogan Lovells \u002D 3E Overhead';
+all_projects['696'] = 'Hogan Lovells \u002D 3E PM';
+all_projects['647'] = 'Hogan Lovells \u002D BI\u005CDW Discovery';
+all_projects['662'] = 'Hogan Lovells \u002D Dev';
+all_projects['808'] = 'Hogan Lovells \u002D GAR Finance Discounted';
+all_projects['809'] = 'Hogan Lovells \u002D GAR Finance Non\u002DBillable';
+all_projects['661'] = 'Hogan Lovells \u002D Overhead';
+all_projects['660'] = 'Hogan Lovells \u002D PM';
+all_projects['680'] = 'Hogan Lovells \u002D Power BI Implementation Support';
+all_projects['744'] = 'Hogan Lovells \u002D Support and Maint Dev';
+all_projects['745'] = 'Hogan Lovells \u002D Support and Maint Overhead';
+all_projects['746'] = 'Hogan Lovells \u002D Support and Maint PM';
+all_projects['772'] = 'Hogan Lovells – GAR Finance Dev';
+all_projects['773'] = 'Hogan Lovells – GAR Finance Overhead';
+all_projects['774'] = 'Hogan Lovells – GAR Finance PM';
+all_projects['480'] = 'Inovalon \u002D Dev';
+all_projects['852'] = 'JBS \u002D FFCRA Family Leave';
+all_projects['851'] = 'JBS \u002D FFCRA Sick Leave';
+all_projects['337'] = 'JBS \u002D Interviews';
+all_projects['811'] = 'JBS \u002D Jury Duty';
+all_projects['764'] = 'JBS \u002D Marketing';
+all_projects['839'] = 'JBS \u002D Marketing Account Based';
+all_projects['840'] = 'JBS \u002D Marketing Content Based';
+all_projects['841'] = 'JBS \u002D Marketing Event Based';
+all_projects['842'] = 'JBS \u002D Marketing Overhead';
+all_projects['843'] = 'JBS \u002D Marketing Website';
+all_projects['8'] = 'JBS \u002D Paid Holiday';
+all_projects['338'] = 'JBS \u002D Presales Estimates';
+all_projects['9'] = 'JBS \u002D PTO';
+all_projects['828'] = 'JBS \u002D PTO Exchange';
+all_projects['216'] = 'JBS \u002D Redmine';
+all_projects['463'] = 'JBS \u002D Sales';
+all_projects['273'] = 'JBS \u002D Timetrack';
+all_projects['400'] = 'JBS \u002D Training';
+all_projects['10'] = 'JBS Non\u002DBillable';
+all_projects['136'] = 'Pereira \u002D KIP';
+all_projects['542'] = 'Level Interactive \u002D Dev';
+all_projects['205'] = 'MAC \u002D 2013 Online Rentals';
+all_projects['206'] = 'MAC \u002D 2013 OPUS';
+all_projects['472'] = 'MAC \u002D 2015 ECom UI';
+all_projects['440'] = 'MAC \u002D 2015 OPUS';
+all_projects['717'] = 'MAC \u002D AD SSO Bugs';
+all_projects['716'] = 'MAC \u002D AD SSO Dev';
+all_projects['718'] = 'MAC \u002D AD SSO PM';
+all_projects['561'] = 'MAC \u002D ADA';
+all_projects['829'] = 'MAC \u002D ASE v2 Dev';
+all_projects['831'] = 'MAC \u002D ASE v2 Overhead';
+all_projects['830'] = 'MAC \u002D ASE v2 PM';
+all_projects['827'] = 'MAC \u002D Azure Network Support';
+all_projects['282'] = 'MAC \u002D Cart Dev';
+all_projects['285'] = 'MAC \u002D Cart UT';
+all_projects['813'] = 'MAC \u002D CCPA';
+all_projects['283'] = 'MAC \u002D Checkout Dev';
+all_projects['286'] = 'MAC \u002D Checkout UT';
+all_projects['266'] = 'MAC \u002D Climb OE Arch';
+all_projects['262'] = 'MAC \u002D Climb OE Development';
+all_projects['263'] = 'MAC \u002D Climb OE Implementation';
+all_projects['269'] = 'MAC \u002D Climb OE Maint';
+all_projects['270'] = 'MAC \u002D Climb OE Overhead';
+all_projects['257'] = 'MAC \u002D Climb OE PM';
+all_projects['306'] = 'MAC \u002D Climb OE Setup';
+all_projects['264'] = 'MAC \u002D Climb OE Support';
+all_projects['275'] = 'MAC \u002D Climb S4S Development';
+all_projects['276'] = 'MAC \u002D Climb S4S Implementation';
+all_projects['277'] = 'MAC \u002D Climb S4S PM';
+all_projects['278'] = 'MAC \u002D Climb S4S Support';
+all_projects['95'] = 'MAC \u002D Commercial Accounts';
+all_projects['80'] = 'MAC \u002D Dev';
+all_projects['714'] = 'MAC \u002D FiPay Bugs';
+all_projects['713'] = 'MAC \u002D FiPay Dev';
+all_projects['715'] = 'MAC \u002D FiPay PM';
+all_projects['194'] = 'MAC \u002D Gift Certificates';
+all_projects['812'] = 'MAC \u002D Infrastructure Upgrades';
+all_projects['403'] = 'MAC \u002D Last Updated Dates';
+all_projects['81'] = 'MAC \u002D Maintenance';
+all_projects['319'] = 'MAC \u002D My Acct/Login';
+all_projects['414'] = 'MAC \u002D OLR Affiliate';
+all_projects['281'] = 'MAC \u002D OLR Wizard Dev';
+all_projects['287'] = 'MAC \u002D OLR Wizard UT';
+all_projects['93'] = 'MAC \u002D Online Rentals';
+all_projects['687'] = 'MAC \u002D Pager Base Hours';
+all_projects['361'] = 'MAC \u002D PM';
+all_projects['849'] = 'MAC \u002D PM Transition';
+all_projects['351'] = 'MAC \u002D Portal Dev';
+all_projects['349'] = 'MAC \u002D Portal Maint';
+all_projects['350'] = 'MAC \u002D Portal PM';
+all_projects['336'] = 'MAC \u002D Pref Editor';
+all_projects['402'] = 'MAC \u002D Pref Editor Mods';
+all_projects['320'] = 'MAC \u002D PST';
+all_projects['791'] = 'MAC \u002D PST Additional Dev';
+all_projects['94'] = 'MAC \u002D School Code Profiles';
+all_projects['99'] = 'MAC \u002D Special Order';
+all_projects['754'] = 'MAC \u002D Umbraco Bugs';
+all_projects['752'] = 'MAC \u002D Umbraco Dev';
+all_projects['753'] = 'MAC \u002D Umbraco PM';
+all_projects['634'] = 'MAC \u002D Virto Bugs';
+all_projects['766'] = 'MAC \u002D Virto CR Non\u002DPhase 2 Bugs';
+all_projects['765'] = 'MAC \u002D Virto CR Non\u002DPhase 2 Dev';
+all_projects['767'] = 'MAC \u002D Virto CR Non\u002DPhase 2 PM';
+all_projects['637'] = 'MAC \u002D Virto Dev';
+all_projects['638'] = 'MAC \u002D Virto Discovery';
+all_projects['636'] = 'MAC \u002D Virto Overhead';
+all_projects['635'] = 'MAC \u002D Virto PM';
+all_projects['790'] = 'MAC \u002D Virto Warranty';
+all_projects['639'] = 'MAC – Paperless Rentals Bugs';
+all_projects['642'] = 'MAC – Paperless Rentals Dev';
+all_projects['641'] = 'MAC – Paperless Rentals Overhead';
+all_projects['640'] = 'MAC – Paperless Rentals PM';
+all_projects['291'] = 'MAC/WWBW \u002D Climb C\u0026C Dev';
+all_projects['292'] = 'MAC/WWBW \u002D Climb C\u0026C Maint';
+all_projects['293'] = 'MAC/WWBW \u002D Climb C\u0026C PM';
+all_projects['401'] = 'MAC/WWBW \u002D Climb C\u0026C Support';
+all_projects['234'] = 'GC \u002D Climb C\u0026C Development';
+all_projects['233'] = 'GC \u002D Climb C\u0026C Implementation';
+all_projects['235'] = 'GC \u002D Climb C\u0026C Support';
+all_projects['231'] = 'GC \u002D Climb S4S Development';
+all_projects['230'] = 'GC \u002D Climb S4S Implementation';
+all_projects['274'] = 'GC \u002D Climb S4S PM';
+all_projects['232'] = 'GC \u002D Climb S4S Support';
+all_projects['321'] = 'GC \u002D OMS';
+all_projects['143'] = 'MF \u002D Accertify';
+all_projects['167'] = 'MF \u002D CC Expert Profiles';
+all_projects['309'] = 'MF \u002D Documentation Phase 1';
+all_projects['310'] = 'MF \u002D Documentation Phase 1 PM';
+all_projects['222'] = 'MF \u002D GC Dev';
+all_projects['184'] = 'MF \u002D GC iOS App ';
+all_projects['106'] = 'MF \u002D GC Microsites';
+all_projects['421'] = 'MF \u002D GC Migration';
+all_projects['207'] = 'MF \u002D Keep in Store';
+all_projects['67'] = 'MF \u002D MAC Dev';
+all_projects['189'] = 'MF \u002D MAC Microsites';
+all_projects['209'] = 'MF \u002D MAC Search \u0026 Browse';
+all_projects['223'] = 'MF \u002D MFI Dev';
+all_projects['220'] = 'MF \u002D Prod Support';
+all_projects['221'] = 'MF \u002D Prod Support OH';
+all_projects['208'] = 'MF \u002D Scene 7';
+all_projects['308'] = 'MF \u002D Used Intake';
+all_projects['219'] = 'MF \u002D WWBW Dev';
+all_projects['312'] = 'MF/M123 \u002D Climb C\u0026C Dev';
+all_projects['271'] = 'MF/M123 \u002D Climb C\u0026C Implementation';
+all_projects['290'] = 'MF/M123 \u002D Climb C\u0026C Maint';
+all_projects['272'] = 'MF/M123 \u002D Climb C\u0026C PM';
+all_projects['314'] = 'MF/M123 \u002D Climb C\u0026C Support';
+all_projects['845'] = 'NLC \u002D Python Django Upgrade Dev';
+all_projects['846'] = 'NLC \u002D Python Django Upgrade PM';
+all_projects['740'] = 'Noodle Academic Insights';
+all_projects['850'] = 'OneHomeCare \u002D Cloud Discovery';
+all_projects['823'] = 'OneHomeCare \u002D Dev';
+all_projects['824'] = 'OneHomeCare \u002D PM';
+all_projects['453'] = 'PeeriQ \u002D Design';
+all_projects['452'] = 'PeeriQ \u002D Dev';
+all_projects['469'] = 'PeeriQ \u002D Other';
+all_projects['455'] = 'PeeriQ \u002D Overhead';
+all_projects['454'] = 'PeeriQ \u002D PM';
+all_projects['456'] = 'PeeriQ \u002D QA';
+all_projects['468'] = 'PeeriQ \u002D T\u0026M';
+all_projects['137'] = 'Pet360 \u002D Dev';
+all_projects['140'] = 'Pet360 \u002D Maintenance';
+all_projects['188'] = 'Pet360 \u002D PetMD U';
+all_projects['165'] = 'Pet360 \u002D PFD Perf';
+all_projects['141'] = 'Pet360 \u002D PM';
+all_projects['787'] = 'Petco \u002D .com Experience';
+all_projects['786'] = 'Petco \u002D At Home Services';
+all_projects['797'] = 'Petco \u002D AWS Acceleration';
+all_projects['861'] = 'Petco \u002D Benefits';
+all_projects['678'] = 'Petco \u002D Cloud API Dev';
+all_projects['679'] = 'Petco \u002D Cloud API Overhead';
+all_projects['838'] = 'Petco \u002D HomeHealth Dev';
+all_projects['677'] = 'Petco \u002D Interviews';
+all_projects['690'] = 'Petco \u002D Membership Squad';
+all_projects['663'] = 'Petco \u002D Mobile and API Project';
+all_projects['803'] = 'Petco \u002D Mobile CI Dev';
+all_projects['693'] = 'Petco \u002D Mobile Squad';
+all_projects['743'] = 'Petco \u002D OneLogin Auth';
+all_projects['649'] = 'Petco \u002D Other Projects';
+all_projects['742'] = 'Petco \u002D Pet Golden Record';
+all_projects['712'] = 'Petco \u002D Petcoach DFS Migration';
+all_projects['702'] = 'Petco \u002D Petcoach Squad Commerce';
+all_projects['689'] = 'Petco \u002D Petcoach Squad In Store';
+all_projects['703'] = 'Petco \u002D Petcoach Squad Rx';
+all_projects['707'] = 'Petco \u002D POS';
+all_projects['788'] = 'Petco \u002D Retail Transformation';
+all_projects['644'] = 'Petco \u002D Selfie Dev';
+all_projects['645'] = 'Petco \u002D Selfie Overhead';
+all_projects['648'] = 'Petco \u002D Selfie QA';
+all_projects['692'] = 'Petco \u002D Services Squad';
+all_projects['785'] = 'Petco \u002D Store Ops';
+all_projects['710'] = 'Petco \u002D SXSW';
+all_projects['855'] = 'Petco \u002D Time Out';
+all_projects['669'] = 'Petco \u002D Upload Dev';
+all_projects['670'] = 'Petco \u002D Upload Overhead';
+all_projects['750'] = 'Petco \u002D WCS 8 Upgrade';
+all_projects['844'] = 'Petco \u002D Wellness';
+all_projects['467'] = 'PETM \u002D Hotel Discovery';
+all_projects['658'] = 'PETM API E\u002Dmail Integration';
+all_projects['544'] = 'PETM CF Reskin Design';
+all_projects['543'] = 'PETM CF Reskin Dev';
+all_projects['545'] = 'PETM CF Reskin PM';
+all_projects['617'] = 'PETM Initial Phase Transition Support';
+all_projects['676'] = 'PETM Integration Auditing for SMS';
+all_projects['682'] = 'PETM KSER\u002D414 Find Next Avail Appts';
+all_projects['681'] = 'PETM KSER\u002D436 Groomery Email Support';
+all_projects['575'] = 'PETM Mobile App Project Design';
+all_projects['574'] = 'PETM Mobile App Project Dev';
+all_projects['576'] = 'PETM Mobile App Project PM';
+all_projects['616'] = 'PETM Mobile Appointments';
+all_projects['633'] = 'PETM Post Transition Support';
+all_projects['659'] = 'PETM Rebooking Discount';
+all_projects['621'] = 'PETM Salesforce Integration \u002D Dev';
+all_projects['623'] = 'PETM Salesforce Integration \u002D Overhead';
+all_projects['622'] = 'PETM Salesforce Integration \u002D PM';
+all_projects['567'] = 'PETM SocialLogin Addendum';
+all_projects['535'] = 'PETM SocialLogin Design';
+all_projects['534'] = 'PETM SocialLogin Dev';
+all_projects['536'] = 'PETM SocialLogin PM';
+all_projects['624'] = 'PETM Vibes Integration \u002D Dev';
+all_projects['626'] = 'PETM Vibes Integration \u002D Overhead';
+all_projects['625'] = 'PETM Vibes Integration \u002D PM';
+all_projects['777'] = 'Automall Rent2Own Dev';
+all_projects['775'] = 'Automall Rent2Own Discovery';
+all_projects['779'] = 'Automall Rent2Own Overhead';
+all_projects['776'] = 'Automall Rent2Own PM';
+all_projects['778'] = 'Automall Rent2Own UI/UX';
+all_projects['706'] = 'PMB Group \u002D Automall Legacy App \u0026 Site Support';
+all_projects['362'] = 'Preschool2Me \u002D Integration';
+all_projects['651'] = 'Presidio \u002D CHOP Consulting';
+all_projects['657'] = 'Presidio \u002D Sandvik';
+all_projects['683'] = 'Presidio \u002D Vertex AWS Assessment';
+all_projects['684'] = 'Presidio \u002D Vertex BI Assessment';
+all_projects['731'] = 'Press Ganey \u002D Administrative PM';
+all_projects['723'] = 'Press Ganey \u002D Consulting Dev';
+all_projects['724'] = 'Press Ganey \u002D Consulting PM';
+all_projects['727'] = 'Press Ganey \u002D Discovery Dev';
+all_projects['728'] = 'Press Ganey \u002D Discovery PM';
+all_projects['729'] = 'Press Ganey \u002D Env Setup Dev';
+all_projects['730'] = 'Press Ganey \u002D Evn Setup PM';
+all_projects['719'] = 'Press Ganey \u002D Home Dev';
+all_projects['720'] = 'Press Ganey \u002D Home PM';
+all_projects['531'] = 'Press Ganey \u002D Maintenance \u0026 Support';
+all_projects['725'] = 'Press Ganey \u002D Resources Dev';
+all_projects['726'] = 'Press Ganey \u002D Resources PM';
+all_projects['517'] = 'Press Ganey \u002D Sitefinity';
+all_projects['721'] = 'Press Ganey \u002D Solutions Dev';
+all_projects['722'] = 'Press Ganey \u002D Solutions PM';
+all_projects['867'] = 'Press Ganey \u002D Transition';
+all_projects['643'] = 'Press Ganey Dev \u002D Events Enhancements';
+all_projects['784'] = 'Press Ganey Dev \u002D Q4 API';
+all_projects['530'] = 'Press Ganey Dev \u002D Site Enhancements';
+all_projects['529'] = 'Press Ganey Dev \u002D Speakers Bureau';
+all_projects['553'] = 'Robbins \u002D ADA';
+all_projects['318'] = 'Robbins \u002D Climb OE Discovery';
+all_projects['228'] = 'Robbins \u002D Climb S4S Development';
+all_projects['227'] = 'Robbins \u002D Climb S4S Implementation';
+all_projects['237'] = 'Robbins \u002D Climb S4S PM';
+all_projects['229'] = 'Robbins \u002D Climb S4S Support';
+all_projects['508'] = 'Robbins \u002D Costa Mesa Addition';
+all_projects['85'] = 'Robbins \u002D ECommerce';
+all_projects['464'] = 'Robbins \u002D Google Tag Manager';
+all_projects['593'] = 'Robbins \u002D Infrastructure ';
+all_projects['86'] = 'Robbins \u002D Integration';
+all_projects['610'] = 'Robbins \u002D Internal Web Dev Support';
+all_projects['506'] = 'Robbins \u002D IT';
+all_projects['187'] = 'Robbins \u002D Maintenance';
+all_projects['186'] = 'Robbins \u002D New Development';
+all_projects['470'] = 'Robbins \u002D Order Management';
+all_projects['311'] = 'Robbins \u002D PM';
+all_projects['462'] = 'Robbins \u002D Portal Project';
+all_projects['322'] = 'Robbins \u002D Responsive Site';
+all_projects['386'] = 'Robbins \u002D Responsive Site Dev';
+all_projects['387'] = 'Robbins \u002D Responsive Site Dsg';
+all_projects['388'] = 'Robbins \u002D Responsive Site OH';
+all_projects['385'] = 'Robbins \u002D Responsive Site PM';
+all_projects['471'] = 'Robbins \u002D VDVR ';
+all_projects['749'] = 'Ropes \u0026 Gray \u002D Assessment';
+all_projects['793'] = 'Ropes \u0026 Gray \u002D Outside Counsel Guidelines';
+all_projects['307'] = 'SanDisk';
+all_projects['466'] = 'Sandisk \u002D Everdrive';
+all_projects['794'] = 'Scripta';
+all_projects['620'] = 'SECU \u002D Non\u002Dbillable';
+all_projects['619'] = 'SECU \u002D Overhead';
+all_projects['618'] = 'SECU \u002D PM';
+all_projects['438'] = 'SECU \u002D Reporting';
+all_projects['492'] = 'Selex';
+all_projects['835'] = 'Selex \u002D AWS';
+all_projects['756'] = 'Selex \u002D Backend Remediation';
+all_projects['556'] = 'Selex \u002D Phase 3';
+all_projects['854'] = 'Siddhi \u002D Clearance Work';
+all_projects['168'] = 'SoMo';
+all_projects['528'] = 'Sonic Bids \u002D ArtistData Dev';
+all_projects['527'] = 'Sonic Bids \u002D ArtistData PM';
+all_projects['520'] = 'SonicBids \u002D Award Messaging Dev';
+all_projects['507'] = 'SonicBids \u002D Dev';
+all_projects['518'] = 'SonicBids \u002D PM';
+all_projects['347'] = 'SponsorHub \u002D  SD Setup';
+all_projects['334'] = 'SponsorHub \u002D API Discovery';
+all_projects['335'] = 'SponsorHub \u002D API PM';
+all_projects['324'] = 'SponsorHub \u002D Discovery';
+all_projects['325'] = 'SponsorHub \u002D PHP Legacy App Dev';
+all_projects['326'] = 'SponsorHub \u002D PHP Legacy App Maint';
+all_projects['327'] = 'SponsorHub \u002D PM';
+all_projects['332'] = 'SponsorHub \u002D Proposal Vetting Dev';
+all_projects['331'] = 'SponsorHub \u002D Proposal Vetting Maint';
+all_projects['333'] = 'SponsorHub \u002D Proposal Vetting PM';
+all_projects['339'] = 'SponsorHub \u002D SD Arch';
+all_projects['353'] = 'SponsorHub \u002D SD CO';
+all_projects['340'] = 'SponsorHub \u002D SD Dev';
+all_projects['379'] = 'SponsorHub \u002D SD Dev TM';
+all_projects['341'] = 'SponsorHub \u002D SD Implementation';
+all_projects['342'] = 'SponsorHub \u002D SD Maint';
+all_projects['380'] = 'SponsorHub \u002D SD Maint   TM';
+all_projects['343'] = 'SponsorHub \u002D SD Overhead';
+all_projects['381'] = 'SponsorHub \u002D SD Overhead TM';
+all_projects['344'] = 'SponsorHub \u002D SD PM';
+all_projects['382'] = 'SponsorHub \u002D SD PM  TM';
+all_projects['345'] = 'SponsorHub \u002D SD PST';
+all_projects['346'] = 'SponsorHub \u002D SD QA';
+all_projects['383'] = 'SponsorHub \u002D SD Setup  TM';
+all_projects['348'] = 'SponsorHub \u002D SD Support';
+all_projects['384'] = 'SponsorHub \u002D SD Support  TM';
+all_projects['51'] = 'Starfish \u002D General';
+all_projects['789'] = 'Summit Sync Infrastructure Audit';
+all_projects['741'] = 'SummitSync Calendar Functionality';
+all_projects['157'] = 'Take Care \u002D iCenter';
+all_projects['204'] = 'Take Care \u002D Invoice Coding SOW';
+all_projects['203'] = 'Take Care \u002D Maintenance SOW';
+all_projects['226'] = 'Take Care \u002D Support';
+all_projects['323'] = 'Tinker Tailor';
+all_projects['590'] = 'Total Wine \u002D CAPEX';
+all_projects['579'] = 'Total Wine \u002D Dev';
+all_projects['589'] = 'Total Wine \u002D OPEX';
+all_projects['577'] = 'Total Wine \u002D Overhead';
+all_projects['578'] = 'Total Wine \u002D PM';
+all_projects['583'] = 'Total Wine \u002D Post POC Dev';
+all_projects['587'] = 'Total Wine \u002D Post POC Overhead';
+all_projects['586'] = 'Total Wine \u002D Post POC Test';
+all_projects['582'] = 'Total Wine \u002D Support';
+all_projects['465'] = 'TSP \u002D Design';
+all_projects['585'] = 'USDA \u002D Development';
+all_projects['597'] = 'USDA \u002D Existing App Support';
+all_projects['584'] = 'USDA \u002D PM';
+all_projects['596'] = 'USDA \u002D UI/UX';
+all_projects['159'] = 'Utrecht \u002D Dev';
+all_projects['176'] = 'Utrecht \u002D FiftyOne Dev';
+all_projects['160'] = 'Utrecht \u002D Maint';
+all_projects['751'] = 'Waypoint \u002D One Homecare';
+all_projects['691'] = 'Interviews';
+all_projects['448'] = 'WineAccess \u002D Design';
+all_projects['445'] = 'WineAccess \u002D Dev';
+all_projects['446'] = 'WineAccess \u002D Overhead';
+all_projects['447'] = 'WineAccess \u002D PM';
+all_projects['449'] = 'WineAccess \u002D QA';
+all_projects['609'] = 'Wineshipping \u002D Access Maintenance';
+all_projects['608'] = 'Wineshipping \u002D Access Mandrill Conversion';
+all_projects['501'] = 'Wineshipping \u002D API';
+all_projects['513'] = 'Wineshipping \u002D Datex Integration';
+all_projects['595'] = 'Wineshipping \u002D Email Narvar';
+all_projects['594'] = 'Wineshipping \u002D Inventory Movement Form';
+all_projects['526'] = 'Wineshipping \u002D Mandrill Email Project';
+all_projects['533'] = 'Wineshipping \u002D Overhead';
+all_projects['532'] = 'Wineshipping \u002D Portal';
+all_projects['573'] = 'Wineshipping \u002D UPS';
+
+
+my_projects['8'] = 'JBS \u002D Paid Holiday';
+my_projects['9'] = 'JBS \u002D PTO';
+my_projects['828'] = 'JBS \u002D PTO Exchange';
+my_projects['10'] = 'JBS Non\u002DBillable';
+my_projects['693'] = 'Petco \u002D Mobile Squad';
+
+var saved_items = [{"project__id": 693, "name": "Bug fixing", "tags": "", "day_of_week": 0, "hours_worked": "8.00", "parent_ticket": "", "billing_type": "M", "ticket": "", "id": 230, "description": "Bug fixing"}, {"project__id": 693, "name": "Architecture", "tags": "", "day_of_week": 0, "hours_worked": "8.00", "parent_ticket": "", "billing_type": "M", "ticket": "", "id": 244, "description": "Architecture"}, {"project__id": 9, "name": "Vacation", "tags": "", "day_of_week": 0, "hours_worked": "8.00", "parent_ticket": "", "billing_type": "", "ticket": "", "id": 263, "description": "Vacation"}];
+$(document).ready(function() {
+    // CSRF/AJAX stuff
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    var csrftoken = getCookie('csrftoken');
+
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+    function sameOrigin(url) {
+        // test that a given url is a same-origin URL
+        // url could be relative or scheme relative or absolute
+        var host = document.location.host; // host + port
+        var protocol = document.location.protocol;
+        var sr_origin = '//' + host;
+        var origin = protocol + sr_origin;
+        // Allow absolute or scheme relative URLs to same origin
+        return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+            (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+            // or any other URL that isn't scheme relative or absolute i.e relative.
+            !(/^(\/\/|http:|https:).*/.test(url));
+    }
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+                // Send the token to same-origin, relative URLs only.
+                // Send the token only if the method warrants CSRF protection
+                // Using the CSRFToken value acquired earlier
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+            if (settings.url.indexOf("/timesheet/tags/") != 0) {
+                $("#loadingDiv").show();
+            }
+        }
+    });
+
+    function refresh_saved_items() {
+        $("#saved_items").empty();
+        $.each(saved_items, function(key, value) {
+            $("#saved_items").append($("<option></option>").attr("value", value['id']).text(value['name']));
+        });
+        var my_options = $("#saved_items").find("option");
+        my_options.sort(function(a,b) {
+                if (a.text > b.text) return 1;
+                else if (a.text < b.text) return -1;
+                else return 0;
+        });
+        $("#saved_items").empty().append(my_options);
+    }
+
+    function resort_items() {
+        var last_date = "";
+        var d = "";
+        $('.week-tag').remove();
+        var daily_sum = 0;
+        var week_sum = 0;
+        $("td[id^='sheet-sum-']").text('0.00');
+        for (x in item_order) {
+            var item = $("#item-"+item_order[x]);
+            d = item.find("input[name='log_date']").val();
+            if (d != last_date) {
+                $("#sum-"+last_date.replace(/\//g,'-')).text("Total hours: "+daily_sum.toFixed(2));
+                if (last_date) {
+                    var md = new Date(last_date);
+                    $("#sheet-sum-"+md.getDay()).text(daily_sum.toFixed(2));
+                }
+                daily_sum = 0;
+                var s = '<tr class="week-tag" valign="top"><td colspan="5">'+d+'</td><td colspan="3" id="sum-'+d.replace(/\//g,'-')+'"></td></tr>';
+                $("#item-body").append(s);
+                last_date = d;
+            }
+            week_sum += parseFloat(item.find("input[name='hours_worked']").val());
+            daily_sum += parseFloat(item.find("input[name='hours_worked']").val());
+            $("#item-body").append($("#item-"+item_order[x]));
+        }
+        $("#sum-"+last_date.replace(/\//g,'-')).text("Total hours: "+daily_sum.toFixed(2));
+        var md = new Date(last_date);
+        $("#sheet-sum-"+md.getDay()).text(daily_sum.toFixed(2));
+        $("tr[id^='item-']:odd").css('background-color', '#ddd');
+        $("tr[id^='item-']:even").css('background-color', '#ffffff');
+        $("#sheet-sum-week").text(week_sum.toFixed(2));
+
+      // Disable everything
+      $("input, textarea, button, select").attr("disabled","disabled");
+      $("li.sort-up, li.sort-down, li.copy, li.save, li.delete, li.save-entry").addClass("disabled");
+
+
+
+    }
+
+    // Tags
+    $("#tags").tagit({
+        select: true,
+        sortable: false,
+        triggerKeys: ['enter', 'comma', 'tab'],
+        tagSource: function(request, response) {
+            $.ajax({
+                url: '/timesheet/tags/',
+                type: 'GET',
+                data: request,
+                success: function(data) {
+                    response(data['tags']);
+                }
+            });
+        }
+    });
+
+
+    $("#tags-397097").tagit({
+        select: true,
+        sortable: false,
+        triggerKeys: ['enter', 'comma', 'tab'],
+        tagSource: function(request, response) {
+            $.ajax({
+                url: '/timesheet/tags/',
+                type: 'GET',
+                data: request,
+                success: function(data) {
+                    response(data['tags']);
+                }
+            });
+        }
+    }).tagit("fill", []);
+
+    $("#tags-397096").tagit({
+        select: true,
+        sortable: false,
+        triggerKeys: ['enter', 'comma', 'tab'],
+        tagSource: function(request, response) {
+            $.ajax({
+                url: '/timesheet/tags/',
+                type: 'GET',
+                data: request,
+                success: function(data) {
+                    response(data['tags']);
+                }
+            });
+        }
+    }).tagit("fill", []);
+
+    $("#tags-397095").tagit({
+        select: true,
+        sortable: false,
+        triggerKeys: ['enter', 'comma', 'tab'],
+        tagSource: function(request, response) {
+            $.ajax({
+                url: '/timesheet/tags/',
+                type: 'GET',
+                data: request,
+                success: function(data) {
+                    response(data['tags']);
+                }
+            });
+        }
+    }).tagit("fill", []);
+
+    $("#tags-397094").tagit({
+        select: true,
+        sortable: false,
+        triggerKeys: ['enter', 'comma', 'tab'],
+        tagSource: function(request, response) {
+            $.ajax({
+                url: '/timesheet/tags/',
+                type: 'GET',
+                data: request,
+                success: function(data) {
+                    response(data['tags']);
+                }
+            });
+        }
+    }).tagit("fill", []);
+
+    $("#tags-397093").tagit({
+        select: true,
+        sortable: false,
+        triggerKeys: ['enter', 'comma', 'tab'],
+        tagSource: function(request, response) {
+            $.ajax({
+                url: '/timesheet/tags/',
+                type: 'GET',
+                data: request,
+                success: function(data) {
+                    response(data['tags']);
+                }
+            });
+        }
+    }).tagit("fill", []);
+
+
+    // Date
+    var lastday = new Date("May 17, 2020 00: 00: 00 ");
+    var firstday = new Date(lastday);
+    firstday.setDate(lastday.getDate() - 6);
+    $(".datepicker").datepicker({
+        autoSize: true,
+        constrainInput: true,
+        minDate: firstday,
+        maxDate: lastday,
+        culture: "en-US"
+    });
+
+    // Project filter
+    function updateProjectLists() {
+        $("select[name='project']").each(function() {
+            var $w = $(this)
+            var sel = $(this).val();
+            $(this).empty();
+            var found = false;
+            $.each(my_projects, function(key, value) {
+                if (key == sel) {
+                    $w.append($("<option></option>").attr("value", key).attr("selected","selected").text(value));
+                    found = true;
+                } else {
+                    $w.append($("<option></option>").attr("value", key).text(value));
+                }
+            });
+            if (!found) {
+                var needed = all_projects[sel];
+                $w.prepend($("<option></option>").attr("value", sel).attr("selected","selected").text(needed));
+            }
+            var my_options = $(this).find("option");
+            my_options.sort(function(a,b) {
+                    if (a.text > b.text) return 1;
+                    else if (a.text < b.text) return -1;
+                    else return 0;
+            });
+            $(this).empty().append(my_options);
+            $(this).val(sel);
+        });
+    }
+
+    updateProjectLists();
+
+
+    resort_items();
+
+    // Disable everything
+    $("input, textarea, button, select").attr("disabled","disabled");
+    $("li.sort-up, li.sort-down, li.copy, li.save, li.delete, li.save-entry").addClass("disabled");
+
+
+    $("#fav_projects").multiselect({
+        header: true,
+        noneSelectedText: "Select Projects",
+        selectedText: "# of # Selected",
+        height: 300,
+        close: function() {
+            var post_data = {'csrf_token': 'C8liT93DupOcyZu0yj9ffowyPwMJ5q1P'};
+            post_data['favorites'] = $(this).val();
+            $.ajax({
+                url: "/accounts/save-favorite-projects/",
+                type: "POST",
+                dataType: "json",
+                data: post_data,
+                success: function(data, textStatus, jqXHR) {
+                    my_projects = {};
+                    for (x in data['favorites']) {
+                        my_projects[String(data['favorites'][x][0])] = data['favorites'][x][1];
+                    }
+          if ($.map(my_projects, function(n, i) { return i; }).length == 0) {
+            my_projects = all_projects;
+          }
+                    updateProjectLists();
+                    $("#loadingDiv").hide();
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    $("#loadingDiv").hide();
+                    alert(jqXHR.responseText);
+                }
+            });
+        }
+    }).multiselectfilter();
+
+    // Saved item inserter
+    $("#saved_item_inserter").click(function() {
+        var id = $("#saved_items").val();
+        $.each(saved_items, function(key, val) {
+            if (val['id'] == id) {
+                $("#item-new").find("select[name='project']").val(val['project__id']);
+                $("#item-new").find("input[name='hours_worked']").val(val['hours_worked']);
+                $("#item-new").find("textarea[name='description']").val(val['description']);
+                $("#item-new").find("input[name='ticket']").val(val['ticket']);
+                $("#item-new").find("input[name='parent_ticket']").val(val['parent_ticket']);
+                $("#item-new").find("select[name='billing_type']").val(val['billing_type']);
+                var tags = []
+                $.each(val['tags'].split(','), function(u, tag) {
+                    tags.push({label: tag.trim(), value: tag.trim()});
+                });
+                $("#item-new").find("#tags").tagit("fill", tags);
+                return;
+            }
+        });
+    });
+
+    if (!String.prototype.trim) {
+        String.prototype.trim=function(){return this.replace(/^\s+|\s+$/g, '');};
+    }
+    $("#loadingDiv").hide();
+    refresh_saved_items();
+
+    $("#dock-toggle").click(function () {
+        $(".bottom-dock-container, .cover").slideToggle("slow, down", function() {
+            if ($(this).is(':hidden')) {
+                $(".tableholder").css('bottom','0px');
+                $.cookie('hide_dock',"1");
+            } else {
+                $(".tableholder").css('bottom','145px');
+                $.cookie('hide_dock',"0");
+            }
+        });
+    });
+    $(".tableholder").css('bottom','145px');
+    $("#dock-toggle").click(function () {
+        $(this).toggleClass("expandedClass");
+    });
+    function moveTableHolder() {
+        var tableHeaderHeight = $('table.scrolltable.tableheader').height();
+         $('.tableholder').css('top', tableHeaderHeight+41);
+    };
+
+    $(function() {moveTableHolder();});
+    $(window).resize(moveTableHolder);
+    if ($.cookie('hide_dock') == "1") {
+        $("#dock-toggle").click();
+    } else {
+        $.cookie('hide_dock', "0");
+    }
+});
+
+
+</script>
+
+</html>

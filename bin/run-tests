@@ -1,0 +1,11 @@
+#!/bin/bash
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd $DIR/..
+
+set -e
+
+export PYTHON_PATH=.
+find . -name '*.pyc' -delete
+pytest --cov=jbstime --cov-report= "$@"
+coverage report -m --skip-covered
+flake8 jbstime

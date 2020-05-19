@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Time Track</title>
+  <link rel="stylesheet" type="text/css" href="/static/css/smoothness/jquery-ui-1.10.3.custom.css" media="screen" />
+  <link rel="stylesheet" type="text/css" href="/static/css/blue.css" media="screen" />
+  <link rel="stylesheet" type="text/css" href="/static/css/style.css" media="screen" />
+  <link rel="stylesheet" type="text/css" href="/static/css/print.css" media="print" />
+  <link rel="stylesheet" type="text/css" href="/static/css/jquery.multiselect.css" media="screen" />
+  <link rel="stylesheet" type="text/css" href="/static/css/jquery.multiselect.filter.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="/static/css/datatables.min.css" media="screen" />
+    <link rel="icon" type="image/x-icon" href="/static/img/favicon.ico" />
+  <style type="text/css">
+  #loadingDiv {
+      position:absolute;
+      top: 50%;
+      left: 50%;
+      width:100px;
+      height:100px;
+      margin-top: -50px; /*set to a negative number 1/2 of your height*/
+      margin-left: -50px; /*set to a negative number 1/2 of your width*/
+      border: 4px solid #ccc;
+      background-color: #f3f3f3;
+    z-index: 10000;
+  }
+  </style>
+
+</head>
+<body>
+
+
+<div id="wrapper">
+  <div id="top-menu">
+      <div id="account">
+
+        <ul><li><a class="login" href="/accounts/password_change/">Change Password</a></li>
+        <li><a class="logout" href="/accounts/logout/">Logout</a></li></ul>
+
+      </div>
+  </div>
+  <div id="header">
+
+    <h1>Time Track</h1>
+        <div id="main-menu">
+            <ul>
+                <li><a class="home" href="http://www.jbecker.com/">JBS Home</a></li>
+                <li><a class="selected" href="/timesheet/" >My Timesheets</a></li>
+                <li><a class="" href="/accounts/">My Account</a></li>
+                <li><a class="" href="/report/">Reports</a></li>
+                <li><a class="" href="/skills/">Skills</a></li>
+
+            </ul>
+        </div>
+  </div>
+  <div id="content" class="clearfix">
+
+
+
+<div   class="clearfix dashboard">
+  <h1>Test Testerson's Dashboard </h1>
+  <div class="dashboard-container clearfix">
+
+    <form method="post" action="/timesheet/">
+      <input type='hidden' name='csrfmiddlewaretoken' value='**TOKEN**' />
+      Create new time sheet for week ending:
+      <select name="newsheet">
+
+        <option value="12/01/2019">12/01/2019</option>
+
+        <option value="12/08/2019">12/08/2019</option>
+
+        <option value="12/15/2019">12/15/2019</option>
+
+        <option value="12/22/2019">12/22/2019</option>
+
+        <option value="12/29/2019">12/29/2019</option>
+
+        <option value="01/05/2020">01/05/2020</option>
+
+        <option value="01/12/2020">01/12/2020</option>
+
+        <option value="01/19/2020">01/19/2020</option>
+
+        <option value="01/26/2020">01/26/2020</option>
+
+        <option value="02/02/2020">02/02/2020</option>
+
+        <option value="02/09/2020">02/09/2020</option>
+
+        <option value="02/16/2020">02/16/2020</option>
+
+        <option value="02/23/2020">02/23/2020</option>
+
+        <option value="03/01/2020">03/01/2020</option>
+
+        <option value="03/08/2020">03/08/2020</option>
+
+        <option value="03/15/2020">03/15/2020</option>
+
+        <option value="03/22/2020">03/22/2020</option>
+
+        <option value="03/29/2020">03/29/2020</option>
+
+        <option value="04/05/2020">04/05/2020</option>
+
+        <option value="04/12/2020">04/12/2020</option>
+
+        <option value="04/19/2020">04/19/2020</option>
+
+        <option value="04/26/2020">04/26/2020</option>
+
+        <option value="05/03/2020">05/03/2020</option>
+
+        <option value="05/10/2020">05/10/2020</option>
+
+        <option value="05/17/2020">05/17/2020</option>
+
+        <option value="05/24/2020" selected="selected">05/24/2020</option>
+
+        <option value="05/31/2020">05/31/2020</option>
+
+        <option value="06/07/2020">06/07/2020</option>
+
+        <option value="06/14/2020">06/14/2020</option>
+
+        <option value="06/21/2020">06/21/2020</option>
+
+        <option value="06/28/2020">06/28/2020</option>
+
+        <option value="07/05/2020">07/05/2020</option>
+
+        <option value="07/12/2020">07/12/2020</option>
+
+        <option value="07/19/2020">07/19/2020</option>
+
+        <option value="07/26/2020">07/26/2020</option>
+
+        <option value="08/02/2020">08/02/2020</option>
+
+        <option value="08/09/2020">08/09/2020</option>
+
+        <option value="08/16/2020">08/16/2020</option>
+
+        <option value="08/23/2020">08/23/2020</option>
+
+        <option value="08/30/2020">08/30/2020</option>
+
+        <option value="09/06/2020">09/06/2020</option>
+
+        <option value="09/13/2020">09/13/2020</option>
+
+        <option value="09/20/2020">09/20/2020</option>
+
+        <option value="09/27/2020">09/27/2020</option>
+
+        <option value="10/04/2020">10/04/2020</option>
+
+        <option value="10/11/2020">10/11/2020</option>
+
+        <option value="10/18/2020">10/18/2020</option>
+
+        <option value="10/25/2020">10/25/2020</option>
+
+        <option value="11/01/2020">11/01/2020</option>
+
+        <option value="11/08/2020">11/08/2020</option>
+
+        <option value="11/15/2020">11/15/2020</option>
+
+        <option value="11/22/2020">11/22/2020</option>
+
+        <option value="11/29/2020">11/29/2020</option>
+
+        <option value="12/06/2020">12/06/2020</option>
+
+        <option value="12/13/2020">12/13/2020</option>
+
+        <option value="12/20/2020">12/20/2020</option>
+
+        <option value="12/27/2020">12/27/2020</option>
+
+        <option value="01/03/2021">01/03/2021</option>
+
+      </select>
+    <button type="submit" class="new-timesheet-go">Go!</button>
+    </form>
+    <br>
+  <div class="dashboard-left">
+    <h3>Weekly Project Summary for Week Ending 05/24/2020</h3>
+    <!-- <div class="sorter"><label>Group by:</label><select><option>Client</option></select></div> -->
+    <table cellpadding="0" cellspacing="0" border="0" class="scrolltable tableheader project-hours">
+      <thead>
+        <tr>
+        <th class="head1">Project</th>
+        <th class="head2">Total Time</th>
+        </tr>
+      </thead>
+    </table>
+    <div class="tableholder project-hours">
+          <table cellpadding=0 cellspacing=0 border=0 >
+
+            <tr  valign=top class="odd">
+              <td>Test Project</td>
+              <td class="project-time">4.00</td>
+            </tr>
+
+          </table>
+    </div>
+    <div class="latest-timesheet-container">
+
+    <h3>Latest Five Timesheets</h3> <a href="/timesheet/?all=1" class="earlier-link">View all timesheets</a>
+          <table cellpadding=0 cellspacing=0 border=0 class="latest-timesheet-table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th></th>
+                                <th>Total Hours</th>
+                                <th>Work Hours</th>
+                                <th>PTO Accrual Rate</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+
+            <tr  valign=top class="odd">
+              <td class="locked-status"><span class=""></span></td>
+              <td>Week Ending 05/24/2020</td>
+                            <td>4.00</td>
+                            <td>4.00</td>
+                            <td>150</td>
+              <td class="edit-link" ><a href="/timesheet/27358/">Edit</a></td>
+            </tr>
+
+            <tr  valign=top class="even">
+              <td class="locked-status"><span class="locked"></span></td>
+              <td>Week Ending 05/17/2020</td>
+                            <td>40.00</td>
+                            <td>40.00</td>
+                            <td>150</td>
+              <td class="edit-link" ><a href="/timesheet/27299/">View</a></td>
+            </tr>
+
+            <tr  valign=top class="odd">
+              <td class="locked-status"><span class="locked"></span></td>
+              <td>Week Ending 05/10/2020</td>
+                            <td>48.00</td>
+                            <td>40.00</td>
+                            <td>150</td>
+              <td class="edit-link" ><a href="/timesheet/27164/">View</a></td>
+            </tr>
+
+            <tr  valign=top class="even">
+              <td class="locked-status"><span class="locked"></span></td>
+              <td>Week Ending 05/03/2020</td>
+                            <td>40.00</td>
+                            <td>40.00</td>
+                            <td>120</td>
+              <td class="edit-link" ><a href="/timesheet/27163/">View</a></td>
+            </tr>
+
+            <tr  valign=top class="odd">
+              <td class="locked-status"><span class="locked"></span></td>
+              <td>Week Ending 04/26/2020</td>
+                            <td>40.00</td>
+                            <td>40.00</td>
+                            <td>120</td>
+              <td class="edit-link" ><a href="/timesheet/27086/">View</a></td>
+            </tr>
+
+
+                        </tbody>
+          </table>
+      </div>
+  </div>
+
+  <div class="dashboard-right">
+    <h2>Summary for Week Ending 05/24/2020</h2>
+    <table cellpadding=0 cellspacing=0 border=0 class="time-clock-summary-table">
+            <tr  valign=top  >
+              <td>Regular Hours</td>
+              <td class="hour-summary" >4.00</td>
+            </tr>
+            <tr  valign=top class="odd" >
+              <td>Holiday</td>
+              <td class="hour-summary" >0.00</td>
+            </tr>
+            <tr  valign=top  >
+              <td>Vacation</td>
+              <td class="hour-summary" >0.00</td>
+            </tr>
+            <tr  valign=top  >
+              <td>PTO Exchange</td>
+              <td class="hour-summary" >0.00</td>
+            </tr>
+            <tr  valign=top  class="odd">
+              <td>Overtime Rate 1</td>
+              <td class="hour-summary" >0.00</td>
+            </tr>
+            <tr  valign=top  >
+              <td>Overtime Rate 2</td>
+              <td class="hour-summary" >0.00</td>
+            </tr>
+            <tr  valign=top  >
+              <td colspan=2> </td>
+            </tr>
+            <tr  valign=top  >
+              <td>Total Hours</td>
+              <td class="hour-summary" >4.00</td>
+            </tr>
+          </table>
+
+          <div class="ptoplaceholder">
+          <table cellpadding=0 cellspacing=0 border=0 >
+            <tr  valign=top  >
+              <td>Previous PTO Balance</td>
+              <td class="hour-summary" style="color:red">100.00</td>
+            </tr>
+            <tr  valign=top  >
+              <td>Balance After This Week</td>
+              <td class="hour-summary" style="color:red">100.00</td>
+            </tr>
+
+                        <tr valign=top>
+                            <td colspan="2" style="color:red;font-weight:bold;text-align:center">PTO is capped at 160 hours</td>
+
+                        <tr valign=top>
+                            <td>Total PTO Earned</td>
+                            <td class="hour-summary">200.00</td>
+                        </tr>
+                        <tr valign=top>
+                            <td>Total PTO Used</td>
+                            <td class="hour-summary">100.00</td>
+                        </tr>
+                        <tr valign=top>
+                            <td>Current PTO Accrual Rate</td>
+                            <td class="hour-summary">150 hours worked = 1 day of PTO</td>
+                        </tr>
+            <tr  valign=top  >
+              <td>Total JBS Hours Worked</td>
+              <td class="hour-summary" >4050.00</td>
+            </tr>
+            <tr  valign=top  >
+              <td>Upcoming Company Holidays</td>
+              <td class="hour-summary" >
+
+                                <p>Memorial Day - 05/25/2020</p>
+
+                                <p>Independence Day - 07/03/2020</p>
+
+                                <p>Labor Day - 09/07/2020</p>
+
+                                <p>Thanksgiving - 11/26/2020</p>
+
+                                <p>Thanksgiving Friday - 11/27/2020</p>
+
+                                <p>Christmas Eve - 12/24/2020</p>
+
+                            </td>
+            </tr>
+          </table>
+        </div>
+  </div>
+</div>
+</div>
+</div>
+
+
+  </div>
+
+
+</div>
+</body>
+<script type="text/javascript" charset="utf-8" src="/static/js/jquery-1.10.1.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="/static/js/jquery-ui-1.10.3.custom.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="/static/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="/static/js/FixedColumns.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="/static/js/tagit.js"></script>
+<script type="text/javascript" charset="utf-8" src="/static/js/jquery.cookie.js"></script>
+<script type="text/javascript" charset="utf-8" src="/static/js/jquery.multiselect.js"></script>
+<script type="text/javascript" charset="utf-8" src="/static/js/jquery.multiselect.filter.js"></script>
+
+</html>

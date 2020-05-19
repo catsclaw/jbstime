@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Time Track</title>
+  <link rel="stylesheet" type="text/css" href="/static/css/smoothness/jquery-ui-1.10.3.custom.css" media="screen" />
+  <link rel="stylesheet" type="text/css" href="/static/css/blue.css" media="screen" />
+  <link rel="stylesheet" type="text/css" href="/static/css/style.css" media="screen" />
+  <link rel="stylesheet" type="text/css" href="/static/css/print.css" media="print" />
+  <link rel="stylesheet" type="text/css" href="/static/css/jquery.multiselect.css" media="screen" />
+  <link rel="stylesheet" type="text/css" href="/static/css/jquery.multiselect.filter.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="/static/css/datatables.min.css" media="screen" />
+    <link rel="icon" type="image/x-icon" href="/static/img/favicon.ico" />
+  <style type="text/css">
+  #loadingDiv {
+      position:absolute;
+      top: 50%;
+      left: 50%;
+      width:100px;
+      height:100px;
+      margin-top: -50px; /*set to a negative number 1/2 of your height*/
+      margin-left: -50px; /*set to a negative number 1/2 of your width*/
+      border: 4px solid #ccc;
+      background-color: #f3f3f3;
+    z-index: 10000;
+  }
+  </style>
+
+</head>
+<body>
+
+
+<div id="wrapper">
+  <div id="top-menu">
+      <div id="account">
+
+      </div>
+  </div>
+  <div id="header">
+
+    <h1>Time Track</h1>
+        <div id="main-menu">
+            <ul>
+                <li><a class="home" href="http://www.jbecker.com/">JBS Home</a></li>
+                <li><a class="" href="/timesheet/" >My Timesheets</a></li>
+                <li><a class="" href="/accounts/">My Account</a></li>
+                <li><a class="" href="/report/">Reports</a></li>
+                <li><a class="" href="/skills/">Skills</a></li>
+
+            </ul>
+        </div>
+  </div>
+  <div id="content" class="clearfix">
+
+
+
+
+
+<div class="dashboard-container clearfix login-page">
+<div class="login-form-container">
+<form method="post" action="/accounts/login/">
+<input type='hidden' name='csrfmiddlewaretoken' value='G0x3QY94vrxNjVA723xEcTI1UqxMDOUN' />
+
+<table>
+<tr>
+    <td class="login-label"><label for="id_username">Username:</label></td>
+    <td class="login-password"><input id="id_username" maxlength="254" name="username" type="text" /></td>
+</tr>
+<tr>
+    <td class="login-label"><label for="id_password">Password:</label></td>
+    <td class="login-password"><input id="id_password" name="password" type="password" /></td>
+</tr>
+</table>
+
+<input type="submit" value="Login >>" />
+<input type="hidden" name="next" value="" />
+<p class="forgot-password"><a href="/accounts/password_reset/">Forgot Password?</a></p>
+</form>
+</div>
+</div>
+
+
+  </div>
+
+
+</div>
+</body>
+<script type="text/javascript" charset="utf-8" src="/static/js/jquery-1.10.1.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="/static/js/jquery-ui-1.10.3.custom.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="/static/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="/static/js/FixedColumns.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="/static/js/tagit.js"></script>
+<script type="text/javascript" charset="utf-8" src="/static/js/jquery.cookie.js"></script>
+<script type="text/javascript" charset="utf-8" src="/static/js/jquery.multiselect.js"></script>
+<script type="text/javascript" charset="utf-8" src="/static/js/jquery.multiselect.filter.js"></script>
+
+</html>

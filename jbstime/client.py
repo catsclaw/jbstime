@@ -9,6 +9,14 @@ from .dates import date_fmt, date_fmt_pad_day, date_from_user_date, find_sunday
 from .error import Error
 
 
+def _exec():
+  try:
+    return cli()
+  except Exception as e:
+    click.echo(f'Unexpected error: {e}', err=True)
+    sys.exit(Error.UNEXPECTED_ERROR)
+
+
 @click.group()
 @click.option('-u', '--user', 'username')
 @click.option('-p', '--pass', 'password')
