@@ -44,7 +44,7 @@ def patch_urls():
 
 @pytest.fixture
 def run():
-  def _exec(*args):
-    return CliRunner().invoke(cli, args)
+  def _exec(*args, input=None):
+    return CliRunner().invoke(cli, args, input=input)
 
   yield _exec
