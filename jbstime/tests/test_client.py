@@ -73,6 +73,22 @@ def test_add(run):
   assert result.exit_code == 0
   assert result.output == ''
 
+  result = run('add', 'today', 'Test Project', 'foo', 'Testing')
+  assert result.exit_code == Error.INVALID_ARGUMENT
+  assert result.output == 'Invalid hours: foo\n'
+
+  result = run('add', 'today', 'Test Project', '100', 'Testing')
+  assert result.exit_code == Error.INVALID_ARGUMENT
+  assert result.output == 'Too many hours: 100.0\n'
+
+  result = run('add', 'today', 'Test Project', '8', '  ')
+  assert result.exit_code == Error.INVALID_ARGUMENT
+  assert result.output == 'No description provided\n'
+
+  result = run('add', 'today', 'Missing Project', '8', 'Testing')
+  assert result.exit_code == Error.INVALID_ARGUMENT
+  assert result.output == 'Invalid project: Missing Project\n'
+
 
 def test_addall(run):
   result = run('addall', 'today', 'Test Project', '8', 'Testing')

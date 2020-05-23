@@ -35,6 +35,7 @@ def patch_urls():
     response(r, 'get', '/timesheet/27358/', '27358.html')
 
     response(r, 'post', '/accounts/login/', 'timesheet.html')
+    response(r, 'post', '/accounts/login/', text='Your username and password didn\'t match', post='username=baduser')
     response(r, 'post', '/timesheet/', 'timesheet.html', post='newsheet=05%2F24%2F2020')
     response(r, 'post', '/timesheet/', text='That timesheet already exists', post='newsheet=05%2F10%2F2020')
     response(r, 'post', '/timesheet/27358/', text='Success')
