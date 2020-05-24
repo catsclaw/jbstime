@@ -159,7 +159,7 @@ class Timesheet:
         option.get('selected') == 'selected'
       )
 
-  def add_item(self, date, project, hours, description):
+  def add_item(self, date, project, hours, description, fill=True):
     p = list_projects().get(project.lower())
     if not p:
       click.echo(f'Invalid project: {project}', err=True)
@@ -175,10 +175,24 @@ class Timesheet:
       click.echo(f'Too many hours: {hours}', err=True)
       sys.exit(Error.INVALID_ARGUMENT)
 
+    if -0.01 < hours < 0.01:
+      click.echo('Hours cannot be 0', err=True)
+      sys.exit(Error.INVALID_ARGUMENT)
+
+    if hours < 0:
+      click.echo(f'Hours cannot be negative: {hours}', err=True)
+      sys.exit(Error.INVALID_ARGUMENT)
+
     description = description.strip()
     if not description:
       click.echo('No description provided', err=True)
       sys.exit(Error.INVALID_ARGUMENT)
+
+    if fill:
+      current_hours = sum(i.hours for i in self.items if i.date == date)
+      hours = min(hours, 8.0 - current_hours)
+      if hours < 0.01:
+        return
 
     req.post(f'/timesheet/{self.id}/', data={
       'log_date': date.strftime('%m/%d/%Y'),

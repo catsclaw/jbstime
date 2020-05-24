@@ -66,16 +66,19 @@ def add(date, project, hours, description):
 @click.argument('project')
 @click.argument('hours')
 @click.argument('description')
-def addall(date, project, hours, description):
+@click.option('--fill/--no-fill', default=True)
+def addall(date, project, hours, description, fill):
   """
     Adds an entry to every workday on a timesheet. Useful for quickly filling
     out duplicate entries.
 
-    DATE is the date of the timesheet. In the event that any of the days
-    overlap with JBS holidays, you will be prompted with an option to fill
-    those out with paid holiday time instead.
-  """
+    DATE is the date of the timesheet. --fill (the default) will ensure if
+    time is already recorded that additional time does not extend beyond an 8
+    hour day. --no-fill disables this feature.
 
+    In the event that any of the days overlap with JBS holidays, you will be
+    prompted with an option to fill those out with paid holiday time instead.
+  """
   timesheet = Timesheet.from_user_date(date)
 
   set_holidays = False
@@ -105,9 +108,9 @@ def addall(date, project, hours, description):
   with click.progressbar(dates) as item_dates:
     for d in item_dates:
       if set_holidays and d in holidays:
-        timesheet.add_item(d, 'JBS - Paid Holiday', 8.0, holidays[d])
+        timesheet.add_item(d, 'JBS - Paid Holiday', 8, holidays[d], fill=fill)
       else:
-        timesheet.add_item(d, project, hours, description)
+        timesheet.add_item(d, project, hours, description, fill=fill)
 
 
 @cli.command()

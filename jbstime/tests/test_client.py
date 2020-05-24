@@ -1,7 +1,8 @@
 from datetime import date
 from unittest.mock import call, patch, PropertyMock
 
-from jbstime.api import TimesheetItem
+from jbstime import req
+from jbstime.api import Project, TimesheetItem
 from jbstime.error import Error
 
 
@@ -59,17 +60,13 @@ def test_timesheet(run):
   assert result.exit_code == 0
   assert result.output.startswith('\nTimesheet for May 24, 2020 (24.0 hours, unsubmitted)')
 
-  result = run('timesheet', 'today')
-  assert result.exit_code == 0
-  assert result.output.startswith('\nTimesheet for May 24, 2020 (24.0 hours, unsubmitted)')
-
-  result = run('timesheet', '5/24')
+  result = run('timesheet', '5/24/2020')
   assert result.exit_code == 0
   assert result.output.startswith('\nTimesheet for May 24, 2020 (24.0 hours, unsubmitted)')
 
   with patch('jbstime.api.Timesheet.items', new_callable=PropertyMock) as items_mock:
     items_mock.return_value = {}
-    result = run('timesheet', 'today')
+    result = run('timesheet', '5/24/2020')
     assert result.exit_code == 0
     assert result.output == 'No hours added to the timesheet for May 24, 2020\n'
 
@@ -94,23 +91,31 @@ def test_timesheets(run):
 
 
 def test_add(run):
-  result = run('add', 'today', 'Test Project', '8', 'Testing')
+  result = run('add', '5/18/2020', 'Test Project', '8', 'Testing')
   assert result.exit_code == 0
   assert result.output == ''
 
-  result = run('add', 'today', 'Test Project', 'foo', 'Testing')
+  result = run('add', '5/18/2020', 'Test Project', 'foo', 'Testing')
   assert result.exit_code == Error.INVALID_ARGUMENT
   assert result.output == 'Invalid hours: foo\n'
 
-  result = run('add', 'today', 'Test Project', '100', 'Testing')
+  result = run('add', '5/18/2020', 'Test Project', '100', 'Testing')
   assert result.exit_code == Error.INVALID_ARGUMENT
   assert result.output == 'Too many hours: 100.0\n'
 
-  result = run('add', 'today', 'Test Project', '8', '  ')
+  result = run('add', '5/18/2020', 'Test Project', '--', '-5', 'Testing')
+  assert result.exit_code == Error.INVALID_ARGUMENT
+  assert result.output == 'Hours cannot be negative: -5.0\n'
+
+  result = run('add', '5/18/2020', 'Test Project', '0', 'Testing')
+  assert result.exit_code == Error.INVALID_ARGUMENT
+  assert result.output == 'Hours cannot be 0\n'
+
+  result = run('add', '5/18/2020', 'Test Project', '8', '  ')
   assert result.exit_code == Error.INVALID_ARGUMENT
   assert result.output == 'No description provided\n'
 
-  result = run('add', 'today', 'Missing Project', '8', 'Testing')
+  result = run('add', '5/18/2020', 'Missing Project', '8', 'Testing')
   assert result.exit_code == Error.INVALID_ARGUMENT
   assert result.output == 'Invalid project: Missing Project\n'
 
@@ -119,33 +124,33 @@ def test_add(run):
 @patch('jbstime.api.list_holidays')
 def test_addall(mock_holidays, mock_add, run):
   mock_holidays.return_value = {}
-  result = run('addall', 'today', 'Test Project', '8', 'Testing')
+  result = run('addall', '5/18/2020', 'Test Project', '8', 'Testing')
   assert result.exit_code == 0
   assert result.output == ''
   assert mock_add.call_count == 5
   mock_add.assert_has_calls([
-    call(date(2020, 5, 18), 'Test Project', '8', 'Testing'),
-    call(date(2020, 5, 19), 'Test Project', '8', 'Testing'),
-    call(date(2020, 5, 20), 'Test Project', '8', 'Testing'),
-    call(date(2020, 5, 21), 'Test Project', '8', 'Testing'),
-    call(date(2020, 5, 22), 'Test Project', '8', 'Testing'),
+    call(date(2020, 5, 18), 'Test Project', '8', 'Testing', fill=True),
+    call(date(2020, 5, 19), 'Test Project', '8', 'Testing', fill=True),
+    call(date(2020, 5, 20), 'Test Project', '8', 'Testing', fill=True),
+    call(date(2020, 5, 21), 'Test Project', '8', 'Testing', fill=True),
+    call(date(2020, 5, 22), 'Test Project', '8', 'Testing', fill=True),
   ], any_order=True)
 
   mock_holidays.return_value = {
     date(2020, 5, 18): 'Holiday A',
   }
   mock_add.reset_mock()
-  result = run('addall', 'today', 'Test Project', '8', 'Testing', input='y')
+  result = run('addall', '5/18/2020', 'Test Project', '8', 'Testing', input='y')
   assert result.exit_code == 0
   assert result.output.startswith('May 18, 2020 is Holiday A\n')
   assert 'Set holidays to time off?' in result.output
   assert mock_add.call_count == 5
   mock_add.assert_has_calls([
-    call(date(2020, 5, 18), 'JBS - Paid Holiday', 8, 'Holiday A'),
-    call(date(2020, 5, 19), 'Test Project', '8', 'Testing'),
-    call(date(2020, 5, 20), 'Test Project', '8', 'Testing'),
-    call(date(2020, 5, 21), 'Test Project', '8', 'Testing'),
-    call(date(2020, 5, 22), 'Test Project', '8', 'Testing'),
+    call(date(2020, 5, 18), 'JBS - Paid Holiday', 8, 'Holiday A', fill=True),
+    call(date(2020, 5, 19), 'Test Project', '8', 'Testing', fill=True),
+    call(date(2020, 5, 20), 'Test Project', '8', 'Testing', fill=True),
+    call(date(2020, 5, 21), 'Test Project', '8', 'Testing', fill=True),
+    call(date(2020, 5, 22), 'Test Project', '8', 'Testing', fill=True),
   ], any_order=True)
 
   mock_holidays.return_value = {
@@ -153,17 +158,17 @@ def test_addall(mock_holidays, mock_add, run):
     date(2020, 5, 19): 'Holiday B',
   }
   mock_add.reset_mock()
-  result = run('addall', 'today', 'Test Project', '8', 'Testing', input='y')
+  result = run('addall', '5/18/2020', 'Test Project', '8', 'Testing', input='y')
   assert result.exit_code == 0
   assert result.output.startswith('May 18, 2020 is Holiday A and May 19, 2020 is Holiday B\n')
   assert 'Set holidays to time off?' in result.output
   assert mock_add.call_count == 5
   mock_add.assert_has_calls([
-    call(date(2020, 5, 18), 'JBS - Paid Holiday', 8, 'Holiday A'),
-    call(date(2020, 5, 19), 'JBS - Paid Holiday', 8, 'Holiday B'),
-    call(date(2020, 5, 20), 'Test Project', '8', 'Testing'),
-    call(date(2020, 5, 21), 'Test Project', '8', 'Testing'),
-    call(date(2020, 5, 22), 'Test Project', '8', 'Testing'),
+    call(date(2020, 5, 18), 'JBS - Paid Holiday', 8, 'Holiday A', fill=True),
+    call(date(2020, 5, 19), 'JBS - Paid Holiday', 8, 'Holiday B', fill=True),
+    call(date(2020, 5, 20), 'Test Project', '8', 'Testing', fill=True),
+    call(date(2020, 5, 21), 'Test Project', '8', 'Testing', fill=True),
+    call(date(2020, 5, 22), 'Test Project', '8', 'Testing', fill=True),
   ], any_order=True)
 
   mock_holidays.return_value = {
@@ -172,24 +177,24 @@ def test_addall(mock_holidays, mock_add, run):
     date(2020, 5, 20): 'Holiday C',
   }
   mock_add.reset_mock()
-  result = run('addall', 'today', 'Test Project', '8', 'Testing', input='n')
+  result = run('addall', '5/18/2020', 'Test Project', '8', 'Testing', input='n')
   assert result.exit_code == 0
   assert 'May 18, 2020 is Holiday A, May 19, 2020 is Holiday B, and May 20, 2020 is Holiday C\n' in result.output
   assert 'Set holidays to time off?' in result.output
   assert mock_add.call_count == 5
   mock_add.assert_has_calls([
-    call(date(2020, 5, 18), 'Test Project', '8', 'Testing'),
-    call(date(2020, 5, 19), 'Test Project', '8', 'Testing'),
-    call(date(2020, 5, 20), 'Test Project', '8', 'Testing'),
-    call(date(2020, 5, 21), 'Test Project', '8', 'Testing'),
-    call(date(2020, 5, 22), 'Test Project', '8', 'Testing'),
+    call(date(2020, 5, 18), 'Test Project', '8', 'Testing', fill=True),
+    call(date(2020, 5, 19), 'Test Project', '8', 'Testing', fill=True),
+    call(date(2020, 5, 20), 'Test Project', '8', 'Testing', fill=True),
+    call(date(2020, 5, 21), 'Test Project', '8', 'Testing', fill=True),
+    call(date(2020, 5, 22), 'Test Project', '8', 'Testing', fill=True),
   ], any_order=True)
 
 
-@patch('jbstime.api.Timesheet.add_item')
+@patch('jbstime.api.list_projects')
 @patch('jbstime.api.list_holidays')
 @patch('jbstime.api.Timesheet.items', new_callable=PropertyMock)
-def test_addall_fill(mock_items, mock_holidays, mock_add, run):
+def test_addall_fill(mock_items, mock_holidays, mock_projects, run):
   mock_items.return_value = set([
     TimesheetItem(1, 4.0, date(2020, 5, 18), 'Test Project', 'Test'),
     TimesheetItem(2, 7.0, date(2020, 5, 19), 'Test Project', 'Test'),
@@ -200,34 +205,71 @@ def test_addall_fill(mock_items, mock_holidays, mock_add, run):
   mock_holidays.return_value = {
     date(2020, 5, 18): 'Holiday A',
   }
+  mock_projects.return_value = {
+    'test project': Project(1, 'Test Project', True),
+    'jbs - paid holiday': Project(2, 'JBS - Paid Holiday', True),
+  }
 
-  result = run('timesheet')
-  assert result.exit_code == 0
+  with patch('jbstime.req.post', wraps=req.post) as post_func:
+    result = run('addall', '5/18/2020', 'Test Project', '8', 'Testing', input='y')
+    assert result.exit_code == 0
+
+    def look_for_hours(date, project, hours):  # pragma: no cover
+      for c in post_func.call_args_list:
+        data = c[1]['data']
+
+        if data.get('log_date') != date:
+          continue
+
+        if data.get('project') != project:
+          continue
+
+        if data.get('hours_worked') != hours:
+          continue
+
+        return True
+
+      return False
+
+    assert look_for_hours('05/18/2020', 2, 4.0)
+    assert look_for_hours('05/19/2020', 1, 1.0)
+    assert look_for_hours('05/20/2020', 1, 6.0)
+    assert look_for_hours('05/21/2020', 1, 8.0)
+
+    post_func.reset_mock()
+    result = run('addall', '5/18/2020', 'Test Project', '8', 'Testing', '--no-fill', input='y')
+    assert result.exit_code == 0
+
+    assert look_for_hours('05/18/2020', 2, 8.0)
+    assert look_for_hours('05/19/2020', 1, 8.0)
+    assert look_for_hours('05/20/2020', 1, 8.0)
+    assert look_for_hours('05/21/2020', 1, 8.0)
+    assert look_for_hours('05/22/2020', 1, 8.0)
 
 
 @patch('jbstime.api.Timesheet.hours', new_callable=PropertyMock)
 @patch('jbstime.api.Timesheet.submit')
 def test_submit(mock_submit, mock_hours, run):
   mock_hours.return_value = 40.0
-  result = run('submit', input='y\n')
+  result = run('submit', input='y')
   assert result.exit_code == 0
   assert result.output == 'Submitted timesheet for May 24, 2020\n'
   mock_submit.assert_called_once()
 
   mock_hours.return_value = 38.0
-  result = run('submit', input='n\n')
+  result = run('submit', input='n')
   assert result.exit_code == 0
   assert result.output == 'There are only 38.0 hours logged. Submit anyway? [y/N]: n\n'
   mock_submit.assert_called_once()
 
   mock_hours.return_value = 1.0
-  result = run('submit', input='n\n')
+  result = run('submit', input='n')
   assert result.exit_code == 0
   assert result.output == 'There is only 1.0 hour logged. Submit anyway? [y/N]: n\n'
   mock_submit.assert_called_once()
 
   mock_hours.return_value = 0.0
-  result = run('submit', input='n\n')
+  result = run('submit', input='n')
   assert result.exit_code == 0
   assert result.output == 'There is no time logged. Submit anyway? [y/N]: n\n'
   mock_submit.assert_called_once()
@@ -238,12 +280,12 @@ def test_submit(mock_submit, mock_hours, run):
 
 @patch('jbstime.api.Timesheet.delete_item')
 def test_delete(mock_delete, run):
-  result = run('delete', 'current', 'Test Project', '--all', input='n\n')
+  result = run('delete', 'current', 'Test Project', '--all', input='n')
   assert result.exit_code == 0
   assert result.output == '5 items to delete\nAre you sure? [y/N]: n\n'
   mock_delete.assert_not_called()
 
-  result = run('delete', 'current', 'Test Project', '--all', input='y\n')
+  result = run('delete', 'current', 'Test Project', '--all', input='y')
   assert result.exit_code == 0
   assert result.output == '5 items to delete\nAre you sure? [y/N]: y\n'
   assert mock_delete.call_count == 5

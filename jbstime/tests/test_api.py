@@ -24,7 +24,7 @@ def test_from_user_date():
   with patch('jbstime.api.Timesheet.list') as mock_list:
     mock_list.return_value = {}
     with pytest.raises(SystemExit) as e:
-      Timesheet.from_user_date('5/16')
+      Timesheet.from_user_date('5/16/2020')
 
     assert e.value.code == Error.TIMESHEET_MISSING
 
