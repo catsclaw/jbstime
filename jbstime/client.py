@@ -3,13 +3,13 @@ import sys
 
 import click
 
+from . import config
 from .api import list_holidays, list_projects, login, Timesheet
-from .config import load_config
 from .dates import date_fmt, date_fmt_pad_day, date_from_user_date, find_sunday
 from .error import Error
 
 
-def _exec():
+def _exec():  # pragma: no cover
   try:
     return cli()
   except Exception as e:
@@ -36,10 +36,10 @@ def cli(username, password):
     you will be prompted to enter them on the command line.
   """
 
-  config = load_config()
+  conf = config.load_config()
 
-  username = username or config['username']
-  password = password or config['password']
+  username = username or conf['username']
+  password = password or conf['password']
 
   if not username:
     username = click.prompt('Username')

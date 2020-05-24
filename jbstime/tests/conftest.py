@@ -1,4 +1,5 @@
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 import requests_mock
@@ -27,7 +28,7 @@ def response(r, method, url, filename=None, text=None, post=None):
 
 
 @pytest.fixture(scope='session', autouse=True)
-def patch_urls():
+def urls():
   with requests_mock.mock() as r:
     response(r, 'get', '/', 'index.html')
     response(r, 'get', '/accounts/login/', 'login.html')
@@ -41,6 +42,15 @@ def patch_urls():
     response(r, 'post', '/timesheet/27358/', text='Success')
 
     yield r
+
+
+@pytest.fixture(scope='session', autouse=True)
+def config():
+  with patch.dict('os.environ', {
+    'JBS_TIMETRACK_USER': 'user',
+    'JBS_TIMETRACK_PASS': 'pass',
+  }):
+    yield
 
 
 @pytest.fixture
