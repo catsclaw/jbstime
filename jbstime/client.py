@@ -289,7 +289,7 @@ def timesheet(date):
     click.echo(f'No hours added to the timesheet for {date_fmt(timesheet.date)}')
     sys.exit()
 
-  plural = 's' if timesheet.hours > 1.001 else ''
+  plural = 's' if timesheet.hours > 1.01 else ''
   unsubmitted = ', unsubmitted' if not timesheet.locked else ''
   title = f'Timesheet for {date_fmt(timesheet.date)} ({timesheet.hours} hour{plural}{unsubmitted})'
 

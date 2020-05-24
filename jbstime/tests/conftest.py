@@ -34,6 +34,7 @@ def urls():
     response(r, 'get', '/accounts/login/', 'login.html')
     response(r, 'get', '/timesheet/', 'timesheet.html')
     response(r, 'get', '/timesheet/27358/', '27358.html')
+    response(r, 'get', '/timesheet/27299/', '27358.html')
 
     response(r, 'post', '/accounts/login/', 'timesheet.html')
     response(r, 'post', '/accounts/login/', text='Your username and password didn\'t match', post='username=baduser')

@@ -60,7 +60,7 @@ class Timesheet:
   def __init__(self, id, date, hours, work_hours, locked):
     self.id = id
     self.date = date
-    self.hours = hours
+    self._hours = hours
     self.work_hours = work_hours
     self.locked = locked
 
@@ -83,11 +83,11 @@ class Timesheet:
 
       timesheet_date = datetime.strptime(data[1].contents[0][12:], '%m/%d/%Y').date()
       dates[timesheet_date] = Timesheet(
-        data[5].find('a')['href'][11:-1],
-        timesheet_date,
-        float(data[2].contents[0]),
-        float(data[3].contents[0]),
-        (data[0].find('span')['class'] + [None])[0] == 'locked',
+        id=data[5].find('a')['href'][11:-1],
+        date=timesheet_date,
+        hours=float(data[2].contents[0]),
+        work_hours=float(data[3].contents[0]),
+        locked=(data[0].find('span')['class'] + [None])[0] == 'locked',
       )
 
     _timesheets = dates
@@ -128,6 +128,10 @@ class Timesheet:
       sys.exit(Error.TIMESHEET_MISSING)
 
     return timesheet
+
+  @property
+  def hours(self):
+    return self._hours
 
   @property
   def items(self):

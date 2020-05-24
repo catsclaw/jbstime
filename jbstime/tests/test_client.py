@@ -1,3 +1,5 @@
+from unittest.mock import patch, PropertyMock
+
 from jbstime.error import Error
 
 
@@ -15,6 +17,12 @@ def test_holidays(run):
   result = run('holidays')
   assert result.exit_code == 0
   assert result.output.startswith('May 25, 2020: Memorial Day')
+
+
+def test_login(run):
+  result = run('--user', 'baduser', 'holidays')
+  assert result.exit_code == Error.LOGIN_FAILED
+  assert result.output == 'Login failed. Check your username and password.\n'
 
 
 def test_projects(run):
@@ -49,11 +57,18 @@ def test_timesheet(run):
   assert result.exit_code == 0
   assert result.output.startswith('\nTimesheet for May 24, 2020 (24.0 hours, unsubmitted)')
 
+  with patch('jbstime.api.Timesheet.items', new_callable=PropertyMock) as items_mock:
+    items_mock.return_value = {}
+    result = run('timesheet', 'today')
+    assert result.exit_code == 0
+    assert result.output == 'No hours added to the timesheet for May 24, 2020\n'
+
 
 def test_timesheets(run):
   result = run('timesheets')
   assert result.exit_code == 0
-  assert result.output.startswith('May 24, 2020   24.00  (unsubmitted)\nMay 17, 2020   40.00\n')
+  assert result.output.startswith('May 24, 2020   24.00  (unsubmitted)')
+  assert '\nMay 10, 2020   48.00\n' in result.output
   assert len(result.output.split('\n')) == 5
 
   result = run('timesheets', '--limit', '10')
@@ -96,17 +111,53 @@ def test_addall(run):
   assert result.output == ''
 
 
-def test_submit(run):
+@patch('jbstime.api.Timesheet.hours', new_callable=PropertyMock)
+@patch('jbstime.api.Timesheet.submit')
+def test_submit(mock_submit, mock_hours, run):
+  mock_hours.return_value = 40.0
   result = run('submit', input='y\n')
   assert result.exit_code == 0
-  assert result.output.endswith('Submitted timesheet for May 24, 2020\n')
+  assert result.output == 'Submitted timesheet for May 24, 2020\n'
+  mock_submit.assert_called_once()
 
+  mock_hours.return_value = 38.0
   result = run('submit', input='n\n')
   assert result.exit_code == 0
-  assert result.output == 'There are only 24.0 hours logged. Submit anyway? [y/N]: n\n'
+  assert result.output == 'There are only 38.0 hours logged. Submit anyway? [y/N]: n\n'
+  mock_submit.assert_called_once()
+
+  mock_hours.return_value = 1.0
+  result = run('submit', input='n\n')
+  assert result.exit_code == 0
+  assert result.output == 'There is only 1.0 hour logged. Submit anyway? [y/N]: n\n'
+  mock_submit.assert_called_once()
+
+  mock_hours.return_value = 0.0
+  result = run('submit', input='n\n')
+  assert result.exit_code == 0
+  assert result.output == 'There is no time logged. Submit anyway? [y/N]: n\n'
+  mock_submit.assert_called_once()
+
+  result = run('submit', '5/17/2020')
+  assert result.exit_code == Error.TIMESHEET_SUBMITTED
 
 
-def test_delete(run):
+@patch('jbstime.api.Timesheet.delete_item')
+def test_delete(mock_delete, run):
+  result = run('delete', 'current', 'Test Project', '--all', input='n\n')
+  assert result.exit_code == 0
+  assert result.output == '5 items to delete\nAre you sure? [y/N]: n\n'
+  mock_delete.assert_not_called()
+
   result = run('delete', 'current', 'Test Project', '--all', input='y\n')
   assert result.exit_code == 0
   assert result.output == '5 items to delete\nAre you sure? [y/N]: y\n'
+  assert mock_delete.call_count == 5
+
+  result = run('delete', '5/24/2020', 'Test Project')
+  assert result.exit_code == 0
+  assert result.output == 'No matching items\n'
+
+  result = run('delete', 'current', 'Test Project', 'Missing Description', '--all')
+  assert result.exit_code == 0
+  assert result.output == 'No matching items\n'

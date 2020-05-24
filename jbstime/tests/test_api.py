@@ -32,3 +32,11 @@ def test_from_user_date():
       Timesheet.from_user_date('5/16')
 
     assert e.value.code == Error.TIMESHEET_MISSING
+
+
+def test_delete():
+  Timesheet.latest().delete_item('27358')
+
+
+def test_submit():
+  Timesheet.latest().submit()
