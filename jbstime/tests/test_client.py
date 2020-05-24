@@ -1,4 +1,5 @@
-from unittest.mock import patch, PropertyMock
+from datetime import date
+from unittest.mock import call, patch, PropertyMock
 
 from jbstime.error import Error
 
@@ -105,10 +106,68 @@ def test_add(run):
   assert result.output == 'Invalid project: Missing Project\n'
 
 
-def test_addall(run):
+@patch('jbstime.api.Timesheet.add_item')
+@patch('jbstime.api.list_holidays')
+def test_addall(mock_holidays, mock_add, run):
+  mock_holidays.return_value = {}
   result = run('addall', 'today', 'Test Project', '8', 'Testing')
   assert result.exit_code == 0
   assert result.output == ''
+  assert mock_add.call_count == 5
+  mock_add.assert_has_calls([
+    call(date(2020, 5, 18), 'Test Project', '8', 'Testing'),
+    call(date(2020, 5, 19), 'Test Project', '8', 'Testing'),
+    call(date(2020, 5, 20), 'Test Project', '8', 'Testing'),
+    call(date(2020, 5, 21), 'Test Project', '8', 'Testing'),
+    call(date(2020, 5, 22), 'Test Project', '8', 'Testing'),
+  ], any_order=True)
+
+  mock_holidays.return_value = {
+    date(2020, 5, 18): 'Holiday A',
+  }
+  mock_add.reset_mock()
+  result = run('addall', 'today', 'Test Project', '8', 'Testing', input='y')
+  assert result.exit_code == 0
+  assert result.output.startswith('May 18, 2020 is Holiday A\n')
+  assert 'Set holidays to time off?' in result.output
+  assert mock_add.call_count == 5
+  mock_add.assert_has_calls([
+    call(date(2020, 5, 18), 'JBS - Paid Holiday', 8, 'Holiday A'),
+    call(date(2020, 5, 19), 'Test Project', '8', 'Testing'),
+    call(date(2020, 5, 20), 'Test Project', '8', 'Testing'),
+    call(date(2020, 5, 21), 'Test Project', '8', 'Testing'),
+    call(date(2020, 5, 22), 'Test Project', '8', 'Testing'),
+  ], any_order=True)
+
+  mock_holidays.return_value = {
+    date(2020, 5, 18): 'Holiday A',
+    date(2020, 5, 19): 'Holiday B',
+  }
+  mock_add.reset_mock()
+  result = run('addall', 'today', 'Test Project', '8', 'Testing', input='y')
+  assert result.exit_code == 0
+  assert result.output.startswith('May 18, 2020 is Holiday A and May 19, 2020 is Holiday B\n')
+  assert 'Set holidays to time off?' in result.output
+  assert mock_add.call_count == 5
+  mock_add.assert_has_calls([
+    call(date(2020, 5, 18), 'JBS - Paid Holiday', 8, 'Holiday A'),
+    call(date(2020, 5, 19), 'JBS - Paid Holiday', 8, 'Holiday B'),
+    call(date(2020, 5, 20), 'Test Project', '8', 'Testing'),
+    call(date(2020, 5, 21), 'Test Project', '8', 'Testing'),
+    call(date(2020, 5, 22), 'Test Project', '8', 'Testing'),
+  ], any_order=True)
+
+  mock_holidays.return_value = {
+    date(2020, 5, 18): 'Holiday A',
+    date(2020, 5, 19): 'Holiday B',
+    date(2020, 5, 20): 'Holiday C',
+  }
+  mock_add.reset_mock()
+  result = run('addall', 'today', 'Test Project', '8', 'Testing', input='n')
+  assert result.exit_code == 0
+  assert 'May 18, 2020 is Holiday A, May 19, 2020 is Holiday B, and May 20, 2020 is Holiday C\n' in result.output
+  assert 'Set holidays to time off?' in result.output
+  assert mock_add.call_count == 5
 
 
 @patch('jbstime.api.Timesheet.hours', new_callable=PropertyMock)

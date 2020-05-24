@@ -3,8 +3,8 @@ import sys
 
 import click
 
-from . import config
-from .api import list_holidays, list_projects, login, Timesheet
+from . import api, config
+from .api import Timesheet
 from .dates import date_fmt, date_fmt_pad_day, date_from_user_date, find_sunday
 from .error import Error
 
@@ -47,7 +47,7 @@ def cli(username, password):
   if not password:
     password = click.prompt('Password', hide_input=True)
 
-  if not login(username, password):
+  if not api.login(username, password):
     click.echo('Login failed. Check your username and password.', err=True)
     sys.exit(Error.LOGIN_FAILED)
 
@@ -90,7 +90,7 @@ def addall(date, project, hours, description):
   set_holidays = False
 
   dates = [timesheet.date - timedelta(days=x) for x in range(2, 7)]
-  holidays = list_holidays()
+  holidays = api.list_holidays()
   conflicts = sorted((d, h) for d, h in holidays.items() if d in dates)
   if conflicts:
     cstr = ''
@@ -255,7 +255,7 @@ def projects(search, all):
   if search:
     search = search.lower()
 
-  for project in list_projects().values():
+  for project in api.list_projects().values():
     if search and search not in project.name.lower():
       continue
 
@@ -268,7 +268,7 @@ def holidays():
   """
     Lists JBS holidays.
   """
-  for date, holiday in list_holidays().items():
+  for date, holiday in api.list_holidays().items():
     click.echo(f'{date_fmt_pad_day(date)}: {holiday}')
 
 
