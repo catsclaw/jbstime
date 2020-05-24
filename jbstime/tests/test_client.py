@@ -1,6 +1,7 @@
 from datetime import date
 from unittest.mock import call, patch, PropertyMock
 
+from jbstime.api import TimesheetItem
 from jbstime.error import Error
 
 
@@ -20,10 +21,14 @@ def test_holidays(run):
   assert result.output.startswith('May 25, 2020: Memorial Day')
 
 
-def test_login(run):
-  result = run('--user', 'baduser', 'holidays')
+def test_login(run, no_config):
+  result = run('--user', 'baduser', '--pass', 'foo', 'holidays')
   assert result.exit_code == Error.LOGIN_FAILED
   assert result.output == 'Login failed. Check your username and password.\n'
+
+  # result = run('holidays', '--help', input='x\nx\n')
+  # assert result.exit_code == 0
+  # assert result.output.startswith('Usage: cli holidays [OPTIONS]\n')
 
 
 def test_projects(run):
@@ -168,6 +173,34 @@ def test_addall(mock_holidays, mock_add, run):
   assert 'May 18, 2020 is Holiday A, May 19, 2020 is Holiday B, and May 20, 2020 is Holiday C\n' in result.output
   assert 'Set holidays to time off?' in result.output
   assert mock_add.call_count == 5
+  mock_add.assert_has_calls([
+    call(date(2020, 5, 18), 'Test Project', '8', 'Testing'),
+    call(date(2020, 5, 19), 'Test Project', '8', 'Testing'),
+    call(date(2020, 5, 20), 'Test Project', '8', 'Testing'),
+    call(date(2020, 5, 21), 'Test Project', '8', 'Testing'),
+    call(date(2020, 5, 22), 'Test Project', '8', 'Testing'),
+  ], any_order=True)
+
+
+@patch('jbstime.api.Timesheet.add_item')
+@patch('jbstime.api.list_holidays')
+@patch('jbstime.api.Timesheet.items', new_callable=PropertyMock)
+def test_addall_fill(mock_items, mock_holidays, mock_add, run):
+  mock_items.return_value = set([
+    TimesheetItem(1, 4.0, date(2020, 5, 18), 'Test Project', 'Test'),
+    TimesheetItem(2, 7.0, date(2020, 5, 19), 'Test Project', 'Test'),
+    TimesheetItem(3, 1.0, date(2020, 5, 20), 'Test Project', 'Test'),
+    TimesheetItem(4, 1.0, date(2020, 5, 20), 'Test Project', 'Test 2'),
+    TimesheetItem(5, 8.0, date(2020, 5, 22), 'Test Project', 'Test'),
+  ])
+  mock_holidays.return_value = {
+    date(2020, 5, 18): 'Holiday A',
+  }
+
+  result = run('timesheet')
+  assert result.exit_code == 0
+  return
+  raise ValueError(result.output)
 
 
 @patch('jbstime.api.Timesheet.hours', new_callable=PropertyMock)

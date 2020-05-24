@@ -54,6 +54,18 @@ def config():
     yield
 
 
+@pytest.fixture(scope='function')
+def no_config():
+  with patch('pathlib.Path.open') as mock_open:
+    mock_open.side_effect = FileNotFoundError
+
+    with patch.dict('os.environ', {
+      'JBS_TIMETRACK_USER': '',
+      'JBS_TIMETRACK_PASS': '',
+    }):
+       yield
+
+
 @pytest.fixture
 def run():
   def _exec(*args, input=None):
