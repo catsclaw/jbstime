@@ -22,13 +22,17 @@ def test_holidays(run):
 
 
 def test_login(run, no_config):
+  result = run('--user', 'user', '--pass', 'foo', 'holidays')
+  assert result.exit_code == 0
+  assert result.output.startswith('May 25, 2020: Memorial Day')
+
   result = run('--user', 'baduser', '--pass', 'foo', 'holidays')
   assert result.exit_code == Error.LOGIN_FAILED
   assert result.output == 'Login failed. Check your username and password.\n'
 
-  # result = run('holidays', '--help', input='x\nx\n')
-  # assert result.exit_code == 0
-  # assert result.output.startswith('Usage: cli holidays [OPTIONS]\n')
+  result = run('holidays', '--help')
+  assert result.exit_code == 0
+  assert result.output.startswith('Usage: cli holidays [OPTIONS]\n')
 
 
 def test_projects(run):
@@ -199,8 +203,6 @@ def test_addall_fill(mock_items, mock_holidays, mock_add, run):
 
   result = run('timesheet')
   assert result.exit_code == 0
-  return
-  raise ValueError(result.output)
 
 
 @patch('jbstime.api.Timesheet.hours', new_callable=PropertyMock)

@@ -2,13 +2,8 @@ from unittest.mock import patch
 
 import pytest
 
-from jbstime.api import login, Timesheet
+from jbstime.api import Timesheet
 from jbstime.error import Error
-
-
-def test_login():
-  assert login('user', 'pass')
-  assert not login('baduser', 'pass')
 
 
 @patch('jbstime.api.Timesheet.list')

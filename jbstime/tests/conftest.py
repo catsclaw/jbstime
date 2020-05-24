@@ -6,6 +6,7 @@ import requests_mock
 
 from click.testing import CliRunner
 
+from jbstime.api import _clear
 from jbstime.client import cli
 
 
@@ -66,9 +67,10 @@ def no_config():
        yield
 
 
-@pytest.fixture
+@pytest.fixture(scope='function')
 def run():
   def _exec(*args, input=None):
+    _clear()
     return CliRunner().invoke(cli, args, input=input)
 
   yield _exec

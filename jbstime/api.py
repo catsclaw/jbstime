@@ -12,23 +12,16 @@ from .error import Error
 
 _timesheets = None
 _projects = None
-_holidays = None
 
 
 TimesheetItem = namedtuple('TimesheetItem', 'id hours date project description')
 Project = namedtuple('Project', 'id name favorite')
 
 
-def login(username, password):
-  r = req.post('/accounts/login/', data={
-    'username': username,
-    'password': password,
-  })
-
-  if 'Your username and password didn\'t match' in r.text:
-    return False
-
-  return True
+def _clear():
+  global _timesheets, _projects, _holidays
+  _timesheets = None
+  _projects = None
 
 
 def list_projects():
@@ -38,11 +31,6 @@ def list_projects():
 
 
 def list_holidays():
-  global _holidays
-
-  if _holidays is not None:
-    return _holidays
-
   r = req.get('/timesheet/')
   doc = BeautifulSoup(r.text, 'html.parser')
   holidays = {}
@@ -52,7 +40,6 @@ def list_holidays():
         h, d = holiday.contents[0].split(' - ')
         holidays[datetime.strptime(d, '%m/%d/%Y').date()] = h
 
-  _holidays = holidays
   return holidays
 
 

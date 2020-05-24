@@ -3,7 +3,7 @@ import sys
 
 import click
 
-from . import api, config
+from . import api
 from .api import Timesheet
 from .dates import date_fmt, date_fmt_pad_day, date_from_user_date, find_sunday
 from .error import Error
@@ -20,7 +20,8 @@ def _exec():  # pragma: no cover
 @click.group()
 @click.option('-u', '--user', 'username')
 @click.option('-p', '--pass', 'password')
-def cli(username, password):
+@click.pass_context
+def cli(ctx, username, password):
   """
     Commands for managing JBS timesheets.
 
@@ -36,20 +37,10 @@ def cli(username, password):
     you will be prompted to enter them on the command line.
   """
 
-  conf = config.load_config()
-
-  username = username or conf['username']
-  password = password or conf['password']
-
-  if not username:
-    username = click.prompt('Username')
-
-  if not password:
-    password = click.prompt('Password', hide_input=True)
-
-  if not api.login(username, password):
-    click.echo('Login failed. Check your username and password.', err=True)
-    sys.exit(Error.LOGIN_FAILED)
+  ctx.ensure_object(dict)
+  ctx.obj['cmd_username'] = username
+  ctx.obj['cmd_password'] = password
+  ctx.obj['logged_in'] = False
 
 
 @cli.command()
