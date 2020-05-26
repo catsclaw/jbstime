@@ -251,25 +251,25 @@ def test_addall_fill(mock_items, mock_holidays, mock_projects, run):
 @patch('jbstime.api.Timesheet.submit')
 def test_submit(mock_submit, mock_hours, run):
   mock_hours.return_value = 40.0
-  result = run('submit', input='y')
+  result = run('submit', '05/24/2020', input='y')
   assert result.exit_code == 0
   assert result.output == 'Submitted timesheet for May 24, 2020\n'
   mock_submit.assert_called_once()
 
   mock_hours.return_value = 38.0
-  result = run('submit', input='n')
+  result = run('submit', '05/24/2020', input='n')
   assert result.exit_code == 0
   assert result.output == 'There are only 38.0 hours logged. Submit anyway? [y/N]: n\n'
   mock_submit.assert_called_once()
 
   mock_hours.return_value = 1.0
-  result = run('submit', input='n')
+  result = run('submit', '05/24/2020', input='n')
   assert result.exit_code == 0
   assert result.output == 'There is only 1.0 hour logged. Submit anyway? [y/N]: n\n'
   mock_submit.assert_called_once()
 
   mock_hours.return_value = 0.0
-  result = run('submit', input='n')
+  result = run('submit', '05/24/2020', input='n')
   assert result.exit_code == 0
   assert result.output == 'There is no time logged. Submit anyway? [y/N]: n\n'
   mock_submit.assert_called_once()
@@ -280,12 +280,12 @@ def test_submit(mock_submit, mock_hours, run):
 
 @patch('jbstime.api.Timesheet.delete_item')
 def test_delete(mock_delete, run):
-  result = run('delete', 'current', 'Test Project', '--all', input='n')
+  result = run('delete', '5/24/2020', 'Test Project', '--all', input='n')
   assert result.exit_code == 0
   assert result.output == '5 items to delete\nAre you sure? [y/N]: n\n'
   mock_delete.assert_not_called()
 
-  result = run('delete', 'current', 'Test Project', '--all', input='y')
+  result = run('delete', '5/24/2020', 'Test Project', '--all', input='y')
   assert result.exit_code == 0
   assert result.output == '5 items to delete\nAre you sure? [y/N]: y\n'
   assert mock_delete.call_count == 5
@@ -294,6 +294,6 @@ def test_delete(mock_delete, run):
   assert result.exit_code == 0
   assert result.output == 'No matching items\n'
 
-  result = run('delete', 'current', 'Test Project', 'Missing Description', '--all')
+  result = run('delete', '5/24/2020', 'Test Project', 'Missing Description', '--all')
   assert result.exit_code == 0
   assert result.output == 'No matching items\n'

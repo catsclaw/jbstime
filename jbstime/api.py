@@ -171,10 +171,6 @@ class Timesheet:
       click.echo(f'Invalid hours: {hours}', err=True)
       sys.exit(Error.INVALID_ARGUMENT)
 
-    if hours > 99.0:
-      click.echo(f'Too many hours: {hours}', err=True)
-      sys.exit(Error.INVALID_ARGUMENT)
-
     if -0.01 < hours < 0.01:
       click.echo('Hours cannot be 0', err=True)
       sys.exit(Error.INVALID_ARGUMENT)
@@ -193,6 +189,10 @@ class Timesheet:
       hours = min(hours, 8.0 - current_hours)
       if hours < 0.01:
         return
+
+    if hours > 99.0:
+      click.echo(f'Too many hours: {hours}', err=True)
+      sys.exit(Error.INVALID_ARGUMENT)
 
     req.post(f'/timesheet/{self.id}/', data={
       'log_date': date.strftime('%m/%d/%Y'),

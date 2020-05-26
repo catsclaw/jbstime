@@ -58,7 +58,7 @@ def add(date, project, hours, description):
 
   timesheet = Timesheet.from_user_date(date)
   date = date_from_user_date(date)
-  timesheet.add_item(date, project, hours, description)
+  timesheet.add_item(date, project, hours, description, fill=False)
 
 
 @cli.command()
