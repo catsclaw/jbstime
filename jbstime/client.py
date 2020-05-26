@@ -48,17 +48,20 @@ def cli(ctx, username, password):
 @click.argument('project')
 @click.argument('hours')
 @click.argument('description')
-def add(date, project, hours, description):
+@click.option('--merge/--no-merge', default=True)
+def add(date, project, hours, description, merge):
   """
     Adds an entry to a timesheet.
 
     DATE is the date of the entry. This will automatically select the correct
-    timesheet.
+    timesheet. --merge (the default) will delete existing items with the same
+    project and description and combine those hours into a single item.
+    --no-merge disables this feature.
   """
 
   timesheet = Timesheet.from_user_date(date)
   date = date_from_user_date(date)
-  timesheet.add_item(date, project, hours, description, fill=False)
+  timesheet.add_item(date, project, hours, description, fill=False, merge=merge)
 
 
 @cli.command()
@@ -67,14 +70,17 @@ def add(date, project, hours, description):
 @click.argument('hours')
 @click.argument('description')
 @click.option('--fill/--no-fill', default=True)
-def addall(date, project, hours, description, fill):
+@click.option('--merge/--no-merge', default=True)
+def addall(date, project, hours, description, fill, merge):
   """
     Adds an entry to every workday on a timesheet. Useful for quickly filling
     out duplicate entries.
 
     DATE is the date of the timesheet. --fill (the default) will ensure if
     time is already recorded that additional time does not extend beyond an 8
-    hour day. --no-fill disables this feature.
+    hour day. --merge (also the default) will delete existing items with the
+    same project and description and combine those hours into a single item.
+    --no-fill and --no-merge disables these feature.
 
     In the event that any of the days overlap with JBS holidays, you will be
     prompted with an option to fill those out with paid holiday time instead.
@@ -108,9 +114,9 @@ def addall(date, project, hours, description, fill):
   with click.progressbar(dates) as item_dates:
     for d in item_dates:
       if set_holidays and d in holidays:
-        timesheet.add_item(d, 'JBS - Paid Holiday', 8, holidays[d], fill=fill)
+        timesheet.add_item(d, 'JBS - Paid Holiday', 8, holidays[d], fill=fill, merge=merge)
       else:
-        timesheet.add_item(d, project, hours, description, fill=fill)
+        timesheet.add_item(d, project, hours, description, fill=fill, merge=merge)
 
 
 @cli.command()

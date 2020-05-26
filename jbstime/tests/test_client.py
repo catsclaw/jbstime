@@ -2,7 +2,7 @@ from datetime import date
 from unittest.mock import call, patch, PropertyMock
 
 from jbstime import req
-from jbstime.api import Project, TimesheetItem
+from jbstime.api import TimesheetItem
 from jbstime.error import Error
 
 
@@ -129,11 +129,11 @@ def test_addall(mock_holidays, mock_add, run):
   assert result.output == ''
   assert mock_add.call_count == 5
   mock_add.assert_has_calls([
-    call(date(2020, 5, 18), 'Test Project', '8', 'Testing', fill=True),
-    call(date(2020, 5, 19), 'Test Project', '8', 'Testing', fill=True),
-    call(date(2020, 5, 20), 'Test Project', '8', 'Testing', fill=True),
-    call(date(2020, 5, 21), 'Test Project', '8', 'Testing', fill=True),
-    call(date(2020, 5, 22), 'Test Project', '8', 'Testing', fill=True),
+    call(date(2020, 5, 18), 'Test Project', '8', 'Testing', fill=True, merge=True),
+    call(date(2020, 5, 19), 'Test Project', '8', 'Testing', fill=True, merge=True),
+    call(date(2020, 5, 20), 'Test Project', '8', 'Testing', fill=True, merge=True),
+    call(date(2020, 5, 21), 'Test Project', '8', 'Testing', fill=True, merge=True),
+    call(date(2020, 5, 22), 'Test Project', '8', 'Testing', fill=True, merge=True),
   ], any_order=True)
 
   mock_holidays.return_value = {
@@ -146,11 +146,11 @@ def test_addall(mock_holidays, mock_add, run):
   assert 'Set holidays to time off?' in result.output
   assert mock_add.call_count == 5
   mock_add.assert_has_calls([
-    call(date(2020, 5, 18), 'JBS - Paid Holiday', 8, 'Holiday A', fill=True),
-    call(date(2020, 5, 19), 'Test Project', '8', 'Testing', fill=True),
-    call(date(2020, 5, 20), 'Test Project', '8', 'Testing', fill=True),
-    call(date(2020, 5, 21), 'Test Project', '8', 'Testing', fill=True),
-    call(date(2020, 5, 22), 'Test Project', '8', 'Testing', fill=True),
+    call(date(2020, 5, 18), 'JBS - Paid Holiday', 8, 'Holiday A', fill=True, merge=True),
+    call(date(2020, 5, 19), 'Test Project', '8', 'Testing', fill=True, merge=True),
+    call(date(2020, 5, 20), 'Test Project', '8', 'Testing', fill=True, merge=True),
+    call(date(2020, 5, 21), 'Test Project', '8', 'Testing', fill=True, merge=True),
+    call(date(2020, 5, 22), 'Test Project', '8', 'Testing', fill=True, merge=True),
   ], any_order=True)
 
   mock_holidays.return_value = {
@@ -164,11 +164,11 @@ def test_addall(mock_holidays, mock_add, run):
   assert 'Set holidays to time off?' in result.output
   assert mock_add.call_count == 5
   mock_add.assert_has_calls([
-    call(date(2020, 5, 18), 'JBS - Paid Holiday', 8, 'Holiday A', fill=True),
-    call(date(2020, 5, 19), 'JBS - Paid Holiday', 8, 'Holiday B', fill=True),
-    call(date(2020, 5, 20), 'Test Project', '8', 'Testing', fill=True),
-    call(date(2020, 5, 21), 'Test Project', '8', 'Testing', fill=True),
-    call(date(2020, 5, 22), 'Test Project', '8', 'Testing', fill=True),
+    call(date(2020, 5, 18), 'JBS - Paid Holiday', 8, 'Holiday A', fill=True, merge=True),
+    call(date(2020, 5, 19), 'JBS - Paid Holiday', 8, 'Holiday B', fill=True, merge=True),
+    call(date(2020, 5, 20), 'Test Project', '8', 'Testing', fill=True, merge=True),
+    call(date(2020, 5, 21), 'Test Project', '8', 'Testing', fill=True, merge=True),
+    call(date(2020, 5, 22), 'Test Project', '8', 'Testing', fill=True, merge=True),
   ], any_order=True)
 
   mock_holidays.return_value = {
@@ -183,18 +183,17 @@ def test_addall(mock_holidays, mock_add, run):
   assert 'Set holidays to time off?' in result.output
   assert mock_add.call_count == 5
   mock_add.assert_has_calls([
-    call(date(2020, 5, 18), 'Test Project', '8', 'Testing', fill=True),
-    call(date(2020, 5, 19), 'Test Project', '8', 'Testing', fill=True),
-    call(date(2020, 5, 20), 'Test Project', '8', 'Testing', fill=True),
-    call(date(2020, 5, 21), 'Test Project', '8', 'Testing', fill=True),
-    call(date(2020, 5, 22), 'Test Project', '8', 'Testing', fill=True),
+    call(date(2020, 5, 18), 'Test Project', '8', 'Testing', fill=True, merge=True),
+    call(date(2020, 5, 19), 'Test Project', '8', 'Testing', fill=True, merge=True),
+    call(date(2020, 5, 20), 'Test Project', '8', 'Testing', fill=True, merge=True),
+    call(date(2020, 5, 21), 'Test Project', '8', 'Testing', fill=True, merge=True),
+    call(date(2020, 5, 22), 'Test Project', '8', 'Testing', fill=True, merge=True),
   ], any_order=True)
 
 
-@patch('jbstime.api.list_projects')
 @patch('jbstime.api.list_holidays')
 @patch('jbstime.api.Timesheet.items', new_callable=PropertyMock)
-def test_addall_fill(mock_items, mock_holidays, mock_projects, run):
+def test_addall_fill(mock_items, mock_holidays, run):
   mock_items.return_value = set([
     TimesheetItem(1, 4.0, date(2020, 5, 18), 'Test Project', 'Test'),
     TimesheetItem(2, 7.0, date(2020, 5, 19), 'Test Project', 'Test'),
@@ -205,10 +204,6 @@ def test_addall_fill(mock_items, mock_holidays, mock_projects, run):
   mock_holidays.return_value = {
     date(2020, 5, 18): 'Holiday A',
   }
-  mock_projects.return_value = {
-    'test project': Project(1, 'Test Project', True),
-    'jbs - paid holiday': Project(2, 'JBS - Paid Holiday', True),
-  }
 
   with patch('jbstime.req.post', wraps=req.post) as post_func:
     result = run('addall', '5/18/2020', 'Test Project', '8', 'Testing', input='y')
@@ -218,33 +213,84 @@ def test_addall_fill(mock_items, mock_holidays, mock_projects, run):
       for c in post_func.call_args_list:
         data = c[1]['data']
 
-        if data.get('log_date') != date:
-          continue
-
-        if data.get('project') != project:
-          continue
-
-        if data.get('hours_worked') != hours:
-          continue
-
-        return True
+        if all([data.get('log_date') == date, data.get('project') == project, data.get('hours_worked') == hours]):
+          return True
 
       return False
 
-    assert look_for_hours('05/18/2020', 2, 4.0)
-    assert look_for_hours('05/19/2020', 1, 1.0)
-    assert look_for_hours('05/20/2020', 1, 6.0)
-    assert look_for_hours('05/21/2020', 1, 8.0)
+    assert look_for_hours('05/18/2020', '8', 4.0)
+    assert look_for_hours('05/19/2020', '10000', 1.0)
+    assert look_for_hours('05/20/2020', '10000', 6.0)
+    assert look_for_hours('05/21/2020', '10000', 8.0)
 
     post_func.reset_mock()
     result = run('addall', '5/18/2020', 'Test Project', '8', 'Testing', '--no-fill', input='y')
     assert result.exit_code == 0
 
-    assert look_for_hours('05/18/2020', 2, 8.0)
-    assert look_for_hours('05/19/2020', 1, 8.0)
-    assert look_for_hours('05/20/2020', 1, 8.0)
-    assert look_for_hours('05/21/2020', 1, 8.0)
-    assert look_for_hours('05/22/2020', 1, 8.0)
+    assert look_for_hours('05/18/2020', '8', 8.0)
+    assert look_for_hours('05/19/2020', '10000', 8.0)
+    assert look_for_hours('05/20/2020', '10000', 8.0)
+    assert look_for_hours('05/21/2020', '10000', 8.0)
+    assert look_for_hours('05/22/2020', '10000', 8.0)
+
+
+@patch('jbstime.api.Timesheet.items', new_callable=PropertyMock)
+def test_addall_merge(mock_items, run):
+  mock_items.return_value = set([
+    TimesheetItem(1, 4.0, date(2020, 5, 18), 'Test Project', 'Test Merge'),
+    TimesheetItem(2, 7.0, date(2020, 5, 19), 'Test Project', 'Test'),
+    TimesheetItem(3, 1.0, date(2020, 5, 20), 'Test Project', 'Test Merge'),
+    TimesheetItem(4, 1.0, date(2020, 5, 20), 'Test Project', 'Test 2'),
+    TimesheetItem(5, 8.0, date(2020, 5, 22), 'Test Project', 'Test'),
+  ])
+
+  with patch('jbstime.req.post', wraps=req.post) as post_func:
+    result = run('addall', '5/18/2020', 'Test Project', '2', 'Test Merge', input='y')
+    assert result.exit_code == 0
+
+    def look_for_hours(date, project, hours):  # pragma: no cover
+      for c in post_func.call_args_list:
+        data = c[1]['data']
+
+        if all([data.get('log_date') == date, data.get('project') == project, data.get('hours_worked') == hours]):
+          return True
+
+      return False
+
+    def look_for_delete(id):
+      for c in post_func.call_args_list:
+        data = c[1]['data']
+
+        if all([data.get('action') == 'delete', data.get('id') == id]):
+          return True
+
+      return False
+
+    assert look_for_hours('05/18/2020', '10000', 6.0)
+    assert look_for_hours('05/19/2020', '10000', 1.0)
+    assert look_for_hours('05/20/2020', '10000', 3.0)
+    assert look_for_delete(1)
+    assert not look_for_delete(2)
+    assert look_for_delete(3)
+
+    post_func.reset_mock()
+    result = run('addall', '5/18/2020', 'Test Project', '2', 'Test Merge', '--no-merge', input='y')
+    assert result.exit_code == 0
+
+    assert look_for_hours('05/18/2020', '10000', 2.0)
+    assert look_for_hours('05/19/2020', '10000', 1.0)
+    assert look_for_hours('05/20/2020', '10000', 2.0)
+    assert not look_for_delete(1)
+    assert not look_for_delete(2)
+    assert not look_for_delete(3)
+
+    post_func.reset_mock()
+    result = run('addall', '5/18/2020', 'Test Project', '96', 'Test Merge', '--no-fill', input='y')
+    assert result.exit_code == Error.INVALID_ARGUMENT
+    assert result.output.startswith('Merging this item with other items is too many hours: 100.0')
+
+    result = run('addall', '5/18/2020', 'Test Project', '96', 'Test Merge', '--no-fill', '--no-merge', input='y')
+    assert result.exit_code == 0
 
 
 @patch('jbstime.api.Timesheet.hours', new_callable=PropertyMock)

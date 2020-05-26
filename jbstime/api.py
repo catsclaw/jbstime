@@ -25,8 +25,10 @@ def _clear():
 
 
 def list_projects():
-  latest = Timesheet.latest()
-  latest.items  # Ensures the projects are loaded
+  if _projects is None:
+    latest = Timesheet.latest()
+    latest._load_details()
+
   return _projects
 
 
@@ -159,7 +161,7 @@ class Timesheet:
         option.get('selected') == 'selected'
       )
 
-  def add_item(self, date, project, hours, description, fill=True):
+  def add_item(self, date, project, hours, description, fill=False, merge=True):
     p = list_projects().get(project.lower())
     if not p:
       click.echo(f'Invalid project: {project}', err=True)
@@ -179,6 +181,10 @@ class Timesheet:
       click.echo(f'Hours cannot be negative: {hours}', err=True)
       sys.exit(Error.INVALID_ARGUMENT)
 
+    if hours > 99.0:
+      click.echo(f'Too many hours: {hours}', err=True)
+      sys.exit(Error.INVALID_ARGUMENT)
+
     description = description.strip()
     if not description:
       click.echo('No description provided', err=True)
@@ -190,14 +196,26 @@ class Timesheet:
       if hours < 0.01:
         return
 
-    if hours > 99.0:
-      click.echo(f'Too many hours: {hours}', err=True)
+    to_delete = set()
+    total_hours = hours
+    if merge:
+      for i in self.items:
+        if all([i.date == date, i.project.lower() == project.lower(), i.description == description]):
+          to_delete.add(i)
+          total_hours += i.hours
+
+    if total_hours > 99.0:
+      click.echo(f'Merging this item with other items is too many hours: {total_hours}', err=True)
+      click.echo('You can enter it as a separate item with the --no-merge flag', err=True)
       sys.exit(Error.INVALID_ARGUMENT)
+
+    for i in to_delete:
+      self.delete_item(i.id)
 
     req.post(f'/timesheet/{self.id}/', data={
       'log_date': date.strftime('%m/%d/%Y'),
       'project': p.id,
-      'hours_worked': hours,
+      'hours_worked': total_hours,
       'description': description,
       'ticket': '',
       'billing_type': 'M',
