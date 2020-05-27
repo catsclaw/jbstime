@@ -268,8 +268,9 @@ def holidays():
   """
     Lists JBS holidays.
   """
-  for date, holiday in api.list_holidays().items():
-    click.echo(f'{date_fmt_pad_day(date)}: {holiday}')
+  holidays = api.list_holidays()
+  for date in sorted(holidays):
+    click.echo(f'{date_fmt_pad_day(date)}: {holidays[date]}')
 
 
 @cli.command()

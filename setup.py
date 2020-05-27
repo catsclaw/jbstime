@@ -16,6 +16,7 @@ setuptools.setup(
   extras_require={
       'test': [
         'flake8',
+        'pyfakefs',
         'pytest',
         'pytest-cov',
         'requests-mock',

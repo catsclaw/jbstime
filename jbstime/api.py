@@ -5,12 +5,13 @@ import sys
 from bs4 import BeautifulSoup
 import click
 
-from . import req
+from . import config, req
 from .dates import date_fmt, date_from_user_date, find_sunday
 from .error import Error
 
 
 _timesheets = None
+_holidays = None
 _projects = None
 
 
@@ -22,6 +23,7 @@ def _clear():
   global _timesheets, _projects, _holidays
   _timesheets = None
   _projects = None
+  _holidays = None
 
 
 def list_projects():
@@ -33,16 +35,10 @@ def list_projects():
 
 
 def list_holidays():
-  r = req.get('/timesheet/')
-  doc = BeautifulSoup(r.text, 'html.parser')
-  holidays = {}
-  for td in doc.find('div', attrs={'class': 'ptoplaceholder'}).find_all('td'):
-    if td.contents[0] == 'Upcoming Company Holidays':
-      for holiday in td.find_next_sibling('td').find_all('p'):
-        h, d = holiday.contents[0].split(' - ')
-        holidays[datetime.strptime(d, '%m/%d/%Y').date()] = h
+  if _holidays is None:
+    Timesheet.list()
 
-  return holidays
+  return _holidays
 
 
 class Timesheet:
@@ -57,7 +53,7 @@ class Timesheet:
 
   @classmethod
   def list(cls):
-    global _timesheets
+    global _holidays, _timesheets
     if _timesheets:
       return _timesheets
 
@@ -78,6 +74,18 @@ class Timesheet:
         work_hours=float(data[3].contents[0]),
         locked=(data[0].find('span')['class'] + [None])[0] == 'locked',
       )
+
+    today = datetime.now().date()
+    holidays = {k: v for k, v in config.load_holidays().items() if k <= today}
+
+    for td in doc.find('div', attrs={'class': 'ptoplaceholder'}).find_all('td'):
+      if td.contents[0] == 'Upcoming Company Holidays':
+        for holiday in td.find_next_sibling('td').find_all('p'):
+          h, d = holiday.contents[0].split(' - ')
+          holidays[datetime.strptime(d, '%m/%d/%Y').date()] = h
+
+    config.save_holidays(holidays)
+    _holidays = holidays
 
     _timesheets = dates
     return _timesheets
