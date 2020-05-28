@@ -1,4 +1,5 @@
 from datetime import date
+from decimal import Decimal
 from unittest.mock import call, patch, PropertyMock
 
 from jbstime import req
@@ -25,8 +26,8 @@ def test_holidays(run):
 def test_pto(run):
   result = run('pto')
   assert result.exit_code == 0
-  assert result.output == '''You have 100.0 hours remaining
-You have earned 200.0 hours and used 100.0 hours
+  assert result.output == '''You have 100.00 hours remaining
+You have earned 200.00 hours and used 100.00 hours
 You earn a day for every 150 hours
 You are capped at 160 hours
 '''
@@ -74,11 +75,11 @@ def test_projects(run):
 def test_timesheet(run):
   result = run('timesheet')
   assert result.exit_code == 0
-  assert result.output.startswith('\nTimesheet for May 24, 2020 (24.0 hours, unsubmitted)')
+  assert result.output.startswith('\nTimesheet for May 24, 2020 (24.00 hours, unsubmitted)')
 
   result = run('timesheet', '5/24/2020')
   assert result.exit_code == 0
-  assert result.output.startswith('\nTimesheet for May 24, 2020 (24.0 hours, unsubmitted)')
+  assert result.output.startswith('\nTimesheet for May 24, 2020 (24.00 hours, unsubmitted)')
 
   with patch('jbstime.api.Timesheet.items', new_callable=PropertyMock) as items_mock:
     items_mock.return_value = {}
@@ -117,11 +118,11 @@ def test_add(run):
 
   result = run('add', '5/18/2020', 'Test Project', '100', 'Testing')
   assert result.exit_code == Error.INVALID_ARGUMENT
-  assert result.output == 'Too many hours: 100.0\n'
+  assert result.output == 'Too many hours: 100\n'
 
   result = run('add', '5/18/2020', 'Test Project', '--', '-5', 'Testing')
   assert result.exit_code == Error.INVALID_ARGUMENT
-  assert result.output == 'Hours cannot be negative: -5.0\n'
+  assert result.output == 'Hours cannot be negative: -5\n'
 
   result = run('add', '5/18/2020', 'Test Project', '0', 'Testing')
   assert result.exit_code == Error.INVALID_ARGUMENT
@@ -211,11 +212,11 @@ def test_addall(mock_holidays, mock_add, run):
 @patch('jbstime.api.Timesheet.items', new_callable=PropertyMock)
 def test_addall_fill(mock_items, mock_holidays, run):
   mock_items.return_value = set([
-    TimesheetItem(1, 4.0, date(2020, 5, 18), 'Test Project', 'Test'),
-    TimesheetItem(2, 7.0, date(2020, 5, 19), 'Test Project', 'Test'),
-    TimesheetItem(3, 1.0, date(2020, 5, 20), 'Test Project', 'Test'),
-    TimesheetItem(4, 1.0, date(2020, 5, 20), 'Test Project', 'Test 2'),
-    TimesheetItem(5, 8.0, date(2020, 5, 22), 'Test Project', 'Test'),
+    TimesheetItem(1, Decimal('4.0'), date(2020, 5, 18), 'Test Project', 'Test'),
+    TimesheetItem(2, Decimal('7.0'), date(2020, 5, 19), 'Test Project', 'Test'),
+    TimesheetItem(3, Decimal('1.0'), date(2020, 5, 20), 'Test Project', 'Test'),
+    TimesheetItem(4, Decimal('1.0'), date(2020, 5, 20), 'Test Project', 'Test 2'),
+    TimesheetItem(5, Decimal('8.0'), date(2020, 5, 22), 'Test Project', 'Test'),
   ])
   mock_holidays.return_value = {
     date(2020, 5, 18): 'Holiday A',
@@ -234,30 +235,30 @@ def test_addall_fill(mock_items, mock_holidays, run):
 
       return False
 
-    assert look_for_hours('05/18/2020', '8', 4.0)
-    assert look_for_hours('05/19/2020', '10000', 1.0)
-    assert look_for_hours('05/20/2020', '10000', 6.0)
-    assert look_for_hours('05/21/2020', '10000', 8.0)
+    assert look_for_hours('05/18/2020', '8', Decimal('4.0'))
+    assert look_for_hours('05/19/2020', '10000', Decimal('1.0'))
+    assert look_for_hours('05/20/2020', '10000', Decimal('6.0'))
+    assert look_for_hours('05/21/2020', '10000', Decimal('8.0'))
 
     post_func.reset_mock()
     result = run('addall', '5/18/2020', 'Test Project', '8', 'Testing', '--no-fill', input='y')
     assert result.exit_code == 0
 
-    assert look_for_hours('05/18/2020', '8', 8.0)
-    assert look_for_hours('05/19/2020', '10000', 8.0)
-    assert look_for_hours('05/20/2020', '10000', 8.0)
-    assert look_for_hours('05/21/2020', '10000', 8.0)
-    assert look_for_hours('05/22/2020', '10000', 8.0)
+    assert look_for_hours('05/18/2020', '8', Decimal('8.0'))
+    assert look_for_hours('05/19/2020', '10000', Decimal('8.0'))
+    assert look_for_hours('05/20/2020', '10000', Decimal('8.0'))
+    assert look_for_hours('05/21/2020', '10000', Decimal('8.0'))
+    assert look_for_hours('05/22/2020', '10000', Decimal('8.0'))
 
 
 @patch('jbstime.api.Timesheet.items', new_callable=PropertyMock)
 def test_addall_merge(mock_items, run):
   mock_items.return_value = set([
-    TimesheetItem(1, 4.0, date(2020, 5, 18), 'Test Project', 'Test Merge'),
-    TimesheetItem(2, 7.0, date(2020, 5, 19), 'Test Project', 'Test'),
-    TimesheetItem(3, 1.0, date(2020, 5, 20), 'Test Project', 'Test Merge'),
-    TimesheetItem(4, 1.0, date(2020, 5, 20), 'Test Project', 'Test 2'),
-    TimesheetItem(5, 8.0, date(2020, 5, 22), 'Test Project', 'Test'),
+    TimesheetItem(1, Decimal('4.0'), date(2020, 5, 18), 'Test Project', 'Test Merge'),
+    TimesheetItem(2, Decimal('7.0'), date(2020, 5, 19), 'Test Project', 'Test'),
+    TimesheetItem(3, Decimal('1.0'), date(2020, 5, 20), 'Test Project', 'Test Merge'),
+    TimesheetItem(4, Decimal('1.0'), date(2020, 5, 20), 'Test Project', 'Test 2'),
+    TimesheetItem(5, Decimal('8.0'), date(2020, 5, 22), 'Test Project', 'Test'),
   ])
 
   with patch('jbstime.req.post', wraps=req.post) as post_func:
@@ -282,9 +283,9 @@ def test_addall_merge(mock_items, run):
 
       return False
 
-    assert look_for_hours('05/18/2020', '10000', 6.0)
-    assert look_for_hours('05/19/2020', '10000', 1.0)
-    assert look_for_hours('05/20/2020', '10000', 3.0)
+    assert look_for_hours('05/18/2020', '10000', Decimal('6.0'))
+    assert look_for_hours('05/19/2020', '10000', Decimal('1.0'))
+    assert look_for_hours('05/20/2020', '10000', Decimal('3.0'))
     assert look_for_delete(1)
     assert not look_for_delete(2)
     assert look_for_delete(3)
@@ -293,9 +294,9 @@ def test_addall_merge(mock_items, run):
     result = run('addall', '5/18/2020', 'Test Project', '2', 'Test Merge', '--no-merge', input='y')
     assert result.exit_code == 0
 
-    assert look_for_hours('05/18/2020', '10000', 2.0)
-    assert look_for_hours('05/19/2020', '10000', 1.0)
-    assert look_for_hours('05/20/2020', '10000', 2.0)
+    assert look_for_hours('05/18/2020', '10000', Decimal('2.0'))
+    assert look_for_hours('05/19/2020', '10000', Decimal('1.0'))
+    assert look_for_hours('05/20/2020', '10000', Decimal('2.0'))
     assert not look_for_delete(1)
     assert not look_for_delete(2)
     assert not look_for_delete(3)

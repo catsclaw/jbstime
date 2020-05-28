@@ -1,5 +1,6 @@
 from collections import namedtuple
 from datetime import datetime
+from decimal import Decimal, InvalidOperation
 import re
 import sys
 
@@ -87,16 +88,16 @@ class Timesheet:
       _timesheets[timesheet_date] = Timesheet(
         id=data[5].find('a')['href'][11:-1],
         date=timesheet_date,
-        hours=float(data[2].contents[0]),
-        work_hours=float(data[3].contents[0]),
+        hours=Decimal(data[2].contents[0]),
+        work_hours=Decimal(data[3].contents[0]),
         locked=(data[0].find('span')['class'] + [None])[0] == 'locked',
       )
 
     _pto = PTO(
-      balance=float(doc.find('td', text='Previous PTO Balance').find_next_sibling('td').contents[0]),
+      balance=Decimal(doc.find('td', text='Previous PTO Balance').find_next_sibling('td').contents[0]),
       cap=int(doc.find('td', text=re.compile(r'^PTO is capped at \d+ hours$')).contents[0][17:-6]),
-      earned=float(doc.find('td', text='Total PTO Earned').find_next_sibling('td').contents[0]),
-      used=float(doc.find('td', text='Total PTO Used').find_next_sibling('td').contents[0]),
+      earned=Decimal(doc.find('td', text='Total PTO Earned').find_next_sibling('td').contents[0]),
+      used=Decimal(doc.find('td', text='Total PTO Used').find_next_sibling('td').contents[0]),
       accrual=int(doc.find('td', text='Current PTO Accrual Rate').find_next_sibling('td').contents[0].split(' ')[0])
     )
 
@@ -174,11 +175,11 @@ class Timesheet:
         continue
 
       self._items.add(TimesheetItem(
-        row.find('input', attrs={'name': 'id'})['value'],
-        float(row.find('input', attrs={'name': 'hours_worked'})['value']),
-        datetime.strptime(row.find('input', attrs={'name': 'log_date'})['value'], '%m/%d/%Y').date(),
-        row.find('select', attrs={'name': 'project'}).find('option', selected='selected').contents[0],
-        row.find('textarea', attrs={'name': 'description'}).contents[0]
+        id=row.find('input', attrs={'name': 'id'})['value'],
+        hours=Decimal(row.find('input', attrs={'name': 'hours_worked'})['value']),
+        date=datetime.strptime(row.find('input', attrs={'name': 'log_date'})['value'], '%m/%d/%Y').date(),
+        project=row.find('select', attrs={'name': 'project'}).find('option', selected='selected').contents[0],
+        description=row.find('textarea', attrs={'name': 'description'}).contents[0]
       ))
 
     _projects = {}
@@ -197,8 +198,8 @@ class Timesheet:
       sys.exit(Error.INVALID_ARGUMENT)
 
     try:
-      hours = float(hours)
-    except ValueError:
+      hours = Decimal(hours)
+    except InvalidOperation:
       click.echo(f'Invalid hours: {hours}', err=True)
       sys.exit(Error.INVALID_ARGUMENT)
 
@@ -221,7 +222,7 @@ class Timesheet:
 
     if fill:
       current_hours = sum(i.hours for i in self.items if i.date == date)
-      hours = min(hours, 8.0 - current_hours)
+      hours = min(hours, Decimal('8.0') - current_hours)
       if hours < 0.01:
         return
 
