@@ -39,6 +39,10 @@ def test_bad_config(run, fs):
 
 def test_holidays(run, fs):
   fs.create_file(HOME() / 'holidays.yaml', contents='2020-01-01: New Test Day')
-  result = run('holidays', input='foo\n')
+  result = run('holidays')
+  assert result.exit_code == 0
+  assert result.output.startswith('May 25, 2020: Memorial Day')
+
+  result = run('holidays', '--all')
   assert result.exit_code == 0
   assert result.output.startswith('Jan  1, 2020: New Test Day\nMay 25, 2020: Memorial Day')

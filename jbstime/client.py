@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import date, datetime, timedelta
 import sys
 
 import click
@@ -264,13 +264,27 @@ def projects(search, all):
 
 
 @cli.command()
-def holidays():
+@click.option('--all', is_flag=True, help='List all holidays, including historic ones')
+def holidays(all):
   """
-    Lists JBS holidays.
+    Lists JBS holidays. The website does not list past holidays, but if there
+    is a .jbstime directory in the user's home directory past dates will be
+    cached and available to the program. By default only future holidays and
+    the past two weeks will be displayed, but all of them can be dispayed with
+    the "--all" option.
   """
+
+  if all:
+    start_date = date(1970, 1, 1)
+  else:
+    start_date = (datetime.now() - timedelta(weeks=2)).date()
+
   holidays = api.list_holidays()
-  for date in sorted(holidays):
-    click.echo(f'{date_fmt_pad_day(date)}: {holidays[date]}')
+  for d in sorted(holidays):
+    if d < start_date:
+      continue
+
+    click.echo(f'{date_fmt_pad_day(d)}: {holidays[d]}')
 
 
 @cli.command()
