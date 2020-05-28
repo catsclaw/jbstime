@@ -2,7 +2,7 @@ from datetime import date
 from unittest.mock import call, patch, PropertyMock
 
 from jbstime import req
-from jbstime.api import TimesheetItem
+from jbstime.api import PTO, TimesheetItem
 from jbstime.error import Error
 
 
@@ -20,6 +20,22 @@ def test_holidays(run):
   result = run('holidays')
   assert result.exit_code == 0
   assert result.output.startswith('May 25, 2020: Memorial Day')
+
+
+def test_pto(run):
+  result = run('pto')
+  assert result.exit_code == 0
+  assert result.output == '''You have 100.0 hours remaining
+You have earned 200.0 hours and used 100.0 hours
+You earn a day for every 150 hours
+You are capped at 160 hours
+'''
+
+  with patch('jbstime.api.pto') as mock_pto:
+    mock_pto.return_value = PTO(1, 1, 1, 1, 1)
+    result = run('pto')
+    assert result.exit_code == 0
+    assert result.output.startswith('You have 1 hour remaining')
 
 
 def test_login(run, no_config):

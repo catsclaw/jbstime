@@ -274,6 +274,25 @@ def holidays():
 
 
 @cli.command()
+def pto():
+  """
+    Lists your PTO information.
+  """
+  pto = api.pto()
+
+  def pl(x):
+    if 0.999 < x < 1.001:
+      return '1 hour'
+
+    return f'{x} hours'
+
+  click.echo(f'You have {pl(pto.balance)} remaining')
+  click.echo(f'You have earned {pl(pto.earned)} and used {pl(pto.used)}')
+  click.echo(f'You earn a day for every {pl(pto.accrual)}')
+  click.echo(f'You are capped at {pl(pto.cap)}')
+
+
+@cli.command()
 @click.argument('date', default='latest')
 def timesheet(date):
   """

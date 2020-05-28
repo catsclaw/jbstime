@@ -1,5 +1,6 @@
 from collections import namedtuple
 from datetime import datetime
+import re
 import sys
 
 from bs4 import BeautifulSoup
@@ -13,17 +14,20 @@ from .error import Error
 _timesheets = None
 _holidays = None
 _projects = None
+_pto = None
 
 
 TimesheetItem = namedtuple('TimesheetItem', 'id hours date project description')
+PTO = namedtuple('PTO', 'balance cap earned used accrual')
 Project = namedtuple('Project', 'id name favorite')
 
 
 def _clear():
-  global _timesheets, _projects, _holidays
+  global _timesheets, _projects, _holidays, _pto
   _timesheets = None
   _projects = None
   _holidays = None
+  _pto = None
 
 
 def list_projects():
@@ -36,9 +40,16 @@ def list_projects():
 
 def list_holidays():
   if _holidays is None:
-    Timesheet.list()
+    Timesheet._load()
 
   return _holidays
+
+
+def pto():
+  if _pto is None:
+    Timesheet._load()
+
+  return _pto
 
 
 class Timesheet:
@@ -53,21 +64,27 @@ class Timesheet:
 
   @classmethod
   def list(cls):
-    global _holidays, _timesheets
-    if _timesheets:
-      return _timesheets
+    if _timesheets is None:
+      cls._load()
+
+    return _timesheets
+
+  @classmethod
+  def _load(cls):
+    global _holidays, _timesheets, _pto
 
     r = req.get('/?all=1')
 
     doc = BeautifulSoup(r.text, 'html.parser')
-    dates = {}
+
+    _timesheets = {}
     for row in doc.find('table', attrs={'class': 'latest-timesheet-table'}).find_all('tr'):
       data = row.find_all('td')
       if not data:
         continue
 
       timesheet_date = datetime.strptime(data[1].contents[0][12:], '%m/%d/%Y').date()
-      dates[timesheet_date] = Timesheet(
+      _timesheets[timesheet_date] = Timesheet(
         id=data[5].find('a')['href'][11:-1],
         date=timesheet_date,
         hours=float(data[2].contents[0]),
@@ -75,20 +92,24 @@ class Timesheet:
         locked=(data[0].find('span')['class'] + [None])[0] == 'locked',
       )
 
+    _pto = PTO(
+      balance=float(doc.find('td', text='Previous PTO Balance').find_next_sibling('td').contents[0]),
+      cap=int(doc.find('td', text=re.compile(r'^PTO is capped at \d+ hours$')).contents[0][17:-6]),
+      earned=float(doc.find('td', text='Total PTO Earned').find_next_sibling('td').contents[0]),
+      used=float(doc.find('td', text='Total PTO Used').find_next_sibling('td').contents[0]),
+      accrual=int(doc.find('td', text='Current PTO Accrual Rate').find_next_sibling('td').contents[0].split(' ')[0])
+    )
+
     today = datetime.now().date()
-    holidays = {k: v for k, v in config.load_holidays().items() if k <= today}
+    _holidays = {k: v for k, v in config.load_holidays().items() if k <= today}
 
     for td in doc.find('div', attrs={'class': 'ptoplaceholder'}).find_all('td'):
       if td.contents[0] == 'Upcoming Company Holidays':
         for holiday in td.find_next_sibling('td').find_all('p'):
           h, d = holiday.contents[0].split(' - ')
-          holidays[datetime.strptime(d, '%m/%d/%Y').date()] = h
+          _holidays[datetime.strptime(d, '%m/%d/%Y').date()] = h
 
-    config.save_holidays(holidays)
-    _holidays = holidays
-
-    _timesheets = dates
-    return _timesheets
+    config.save_holidays(_holidays)
 
   @classmethod
   def create(cls, date):
