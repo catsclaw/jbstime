@@ -22,17 +22,17 @@ def test_holidays(run):
   assert result.output.startswith('May 25, 2020: Memorial Day')
 
 
+@patch('jbstime.api.pto')
 @patch('jbstime.api.Timesheet.items', new_callable=PropertyMock)
-def test_pto(mock_items, run):
-  result = run('pto')
-  assert result.exit_code == 0
-  assert result.output == '''You have 100.00 hours remaining
-You have earned 200.00 hours and used 100.00 hours
-You earn a day for every 150 hours
-You are capped at 160 hours
-'''
+def test_pto(mock_items, mock_pto, run):
+    mock_pto.return_value = PTO(
+      balance=Decimal('1.0'),
+      cap=Decimal('10.0'),
+      earned=Decimal('100.0'),
+      used=Decimal('90.5'),
+      accrual=110
+    )
 
-  with patch('jbstime.api.pto') as mock_pto:
     mock_pto.return_value = PTO(1, 1, 1, 1, 1)
     result = run('pto')
     assert result.exit_code == 0
@@ -40,11 +40,20 @@ You are capped at 160 hours
 
     mock_pto.return_value = PTO(
       balance=Decimal('9.5'),
-      cap=Decimal('10.0'),
+      cap=Decimal('10.00'),
       earned=Decimal('100.0'),
       used=Decimal('90.5'),
       accrual=110
     )
+
+    result = run('pto')
+    assert result.exit_code == 0
+    assert result.output == '''You have 9.5 hours remaining
+You have earned 100.0 hours and used 90.5 hours
+You earn a day for every 110 hours
+You are capped at 10.00 hours
+'''
+
     mock_items.return_value = set([
       TimesheetItem(1, Decimal('4.0'), date(2020, 5, 18), 'Test Project', 'Test'),
       TimesheetItem(2, Decimal('7.0'), date(2020, 5, 19), 'Test Project', 'Test'),
@@ -55,6 +64,11 @@ You are capped at 160 hours
     result = run('pto')
     assert result.exit_code == 0
     assert 'additional hours exceeds your PTO cap\nCurrent timesheet puts you at 11.03.' in result.output
+
+    with patch('jbstime.api.Timesheet.locked', new_callable=PropertyMock, return_value=True):
+      result = run('pto')
+      assert result.exit_code == 0
+      assert 'additional hours exceeds your PTO cap' not in result.output
 
     mock_items.return_value = set([
       TimesheetItem(1, Decimal('4.0'), date(2020, 5, 18), 'Test Project', 'Test'),

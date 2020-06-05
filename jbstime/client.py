@@ -18,11 +18,11 @@ def _exec():  # pragma: no cover
     sys.exit(Error.UNEXPECTED_ERROR)
 
 
-def check_pto(items, full_report=False):
+def check_pto(timesheet, full_report=False):
   pto_info = api.pto()
   added_hours = Decimal('0')
   removed_hours = Decimal('0')
-  for i in items:
+  for i in timesheet.items:
     if i.project.startswith('JBS - PTO'):
       removed_hours += i.hours
     else:
@@ -42,7 +42,7 @@ def check_pto(items, full_report=False):
     click.echo(f'You earn a day for every {pl(pto_info.accrual)}')
     click.echo(f'You are capped at {pl(pto_info.cap)}')
 
-  if pto_info.cap <= new_pto:
+  if pto_info.cap <= new_pto and not timesheet.locked:
     click.echo('Warning: current additional hours exceeds your PTO cap')
 
     current_str = f'Current timesheet puts you at {new_pto:.2f}.'
@@ -99,7 +99,7 @@ def add(date, project, hours, description, merge):
   timesheet.add_item(date, project, hours, description, fill=False, merge=merge)
   if Timesheet.latest() == timesheet:
     timesheet.reload()
-    check_pto(timesheet.items)
+    check_pto(timesheet)
 
 
 @cli.command()
@@ -173,7 +173,7 @@ def addall(date, project, hours, description, fill, merge):
 
   if Timesheet.latest() == timesheet:
     timesheet.reload()
-    check_pto(timesheet.items)
+    check_pto(timesheet)
 
 
 @cli.command()
@@ -349,7 +349,7 @@ def pto():
   """
     Lists your PTO information.
   """
-  check_pto(Timesheet.latest().items, full_report=True)
+  check_pto(Timesheet.latest(), full_report=True)
 
 
 @cli.command()

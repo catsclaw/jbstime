@@ -59,9 +59,9 @@ class Timesheet:
     self.date = date
     self._hours = hours
     self.work_hours = work_hours
-    self.locked = locked
 
     self._items = None
+    self._locked = locked
 
   def __eq__(self, o):
     return isinstance(o, Timesheet) and o.id == self.id
@@ -157,6 +157,10 @@ class Timesheet:
   @property
   def hours(self):
     return self._hours
+
+  @property
+  def locked(self):
+    return self._locked
 
   @property
   def items(self):
