@@ -12,6 +12,27 @@ def HOME():  # Needed for patching during tests
   return pathlib.Path.home() / '.jbstime'
 
 
+def config_path():
+  return HOME() / 'config.yaml'
+
+
+def create_config(username, password):
+  home = HOME()
+  home.mkdir(parents=True, exist_ok=True)
+
+  config_file = config_path()
+  try:
+    yaml_config = yaml.safe_load(config_file.open())
+  except Exception:
+    yaml_config = {}
+
+  yaml_config['username'] = username
+  yaml_config['password'] = password
+
+  yaml.dump(yaml_config, config_file.open('w'))
+  config_file.chmod(0o600)
+
+
 def load_config():
   config = {
     'username': None,
@@ -19,7 +40,7 @@ def load_config():
   }
 
   # First try and load the config file
-  config_file = HOME() / 'config.yaml'
+  config_file = config_path()
 
   try:
     yaml_config = yaml.safe_load(config_file.open())

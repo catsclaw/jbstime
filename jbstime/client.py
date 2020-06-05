@@ -4,7 +4,7 @@ import sys
 
 import click
 
-from . import api
+from . import api, config as config_
 from .api import Timesheet
 from .dates import date_fmt, date_fmt_pad_day, date_from_user_date, find_sunday
 from .error import Error
@@ -65,8 +65,7 @@ def cli(ctx, username, password):
     would accept any date from 7/14 to 7/20. And "current" and "today" are
     synonyms for the current date.
 
-    You can specify a username and password by creating a
-    "~/.jbstime/config.yaml" file with a username and password entry, or by
+    You can specify a username and password by running `config`, or by
     creating JBS_TIMESHEET_USER and JBS_TIMESHEET_PASS environmental
     variables, or by using the --user and --pass options. If all else fails,
     you will be prompted to enter them on the command line.
@@ -100,6 +99,26 @@ def add(date, project, hours, description, merge):
   if Timesheet.latest() == timesheet:
     timesheet.reload()
     check_pto(timesheet)
+
+
+@cli.command()
+def config():
+  """
+    Creates a config file.
+
+    This asks for the username and password on the command line, then creates
+    a config file so they do not need to be provided manually. If a config
+    file already exists this will replace the existing username and password.
+
+    WARNING: This stores data - including your password - in plaintext in your
+    home directory. If security is a concern, you should provide the password
+    on the command line or in an environmental variable.
+  """
+  username = click.prompt('Username')
+  password = click.prompt('Password', hide_input=True)
+
+  config_.create_config(username, password)
+  click.echo(f'Config written to {config_.config_path()}')
 
 
 @cli.command()

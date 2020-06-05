@@ -200,3 +200,9 @@ def test_delete(mock_delete, run):
   result = run('delete', '5/24/2020', 'Test Project', 'Missing Description', '--all')
   assert result.exit_code == 0
   assert result.output == 'No matching items\n'
+
+
+def test_config(run, no_config):
+  result = run('config', input='foo\nbar\n')
+  assert result.exit_code == 0
+  assert result.output.startswith('Username: foo\nPassword: \nConfig written to')
