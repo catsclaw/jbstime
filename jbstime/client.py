@@ -1,4 +1,5 @@
 from datetime import date, datetime, timedelta
+from decimal import Decimal
 import sys
 
 import click
@@ -15,6 +16,40 @@ def _exec():  # pragma: no cover
   except Exception as e:
     click.echo(f'Unexpected error: {e}', err=True)
     sys.exit(Error.UNEXPECTED_ERROR)
+
+
+def check_pto(items, full_report=False):
+  pto_info = api.pto()
+  added_hours = Decimal('0')
+  removed_hours = Decimal('0')
+  for i in items:
+    if i.project.startswith('JBS - PTO'):
+      removed_hours += i.hours
+    else:
+      added_hours += i.hours
+
+  new_pto = pto_info.balance + (added_hours / pto_info.accrual * 8) - removed_hours
+
+  def pl(x):
+    if 0.999 < x < 1.001:
+      return '1 hour'
+
+    return f'{x} hours'
+
+  if full_report:
+    click.echo(f'You have {pl(pto_info.balance)} remaining')
+    click.echo(f'You have earned {pl(pto_info.earned)} and used {pl(pto_info.used)}')
+    click.echo(f'You earn a day for every {pl(pto_info.accrual)}')
+    click.echo(f'You are capped at {pl(pto_info.cap)}')
+
+  if pto_info.cap <= new_pto:
+    click.echo('Warning: current additional hours exceeds your PTO cap')
+
+    current_str = f'Current timesheet puts you at {new_pto:.2f}.'
+    if not full_report:
+      current_str += f' Cap is {pto_info.cap}.'
+
+    click.echo(current_str)
 
 
 @click.group()
@@ -62,6 +97,9 @@ def add(date, project, hours, description, merge):
   timesheet = Timesheet.from_user_date(date)
   date = date_from_user_date(date)
   timesheet.add_item(date, project, hours, description, fill=False, merge=merge)
+  if Timesheet.latest() == timesheet:
+    timesheet.reload()
+    check_pto(timesheet.items)
 
 
 @cli.command()
@@ -88,11 +126,11 @@ def addall(date, project, hours, description, fill, merge):
   timesheet = Timesheet.from_user_date(date)
 
   set_holidays = False
-
   dates = [timesheet.date - timedelta(days=x) for x in range(2, 7)]
   holidays = api.list_holidays()
   conflicts = sorted((d, h) for d, h in holidays.items() if d in dates)
   if conflicts:
+    today = datetime.now().date()
     cstr = ''
 
     for i, (d, h) in enumerate(conflicts):
@@ -105,18 +143,37 @@ def addall(date, project, hours, description, fill, merge):
         if i == (len(conflicts) - 1):
           cstr += 'and '
 
-      cstr += f'{date_fmt(d)} is {h}'
+      verb = 'was' if d < today else 'is'
+      cstr += f'{date_fmt(d)} {verb} {h}'
 
     click.echo(cstr)
     set_holidays = click.confirm('Set holidays to time off?')
 
   # Add the same info to Monday through Friday
+  results = []
   with click.progressbar(dates) as item_dates:
     for d in item_dates:
       if set_holidays and d in holidays:
-        timesheet.add_item(d, 'JBS - Paid Holiday', 8, holidays[d], fill=fill, merge=merge)
+        results.append([d, timesheet.add_item(d, 'JBS - Paid Holiday', 8, holidays[d], fill=fill, merge=merge)])
       else:
-        timesheet.add_item(d, project, hours, description, fill=fill, merge=merge)
+        results.append([d, timesheet.add_item(d, project, hours, description, fill=fill, merge=merge)])
+
+  count_errors = sum(r is not True for d, r in results)
+  if count_errors == 1:
+    for d, r in results:
+      if r is not True:
+        click.echo(f'Warning: no hours added to {d}. It already has {r} hours.')
+        break
+  elif count_errors > 0:
+    click.echo('Warning: the following dates are already full.')
+    click.echo('No additional hours were added to them.')
+    for d, r in results:
+      if r is not True:
+        click.echo(f'  {date_fmt_pad_day(d)} - {r:>6.2f} hours')
+
+  if Timesheet.latest() == timesheet:
+    timesheet.reload()
+    check_pto(timesheet.items)
 
 
 @cli.command()
@@ -201,9 +258,9 @@ def submit(date):
     if timesheet.hours < 0.01:
       msg = 'There is no time logged. Submit anyway?'
     else:
-      plural = 's' if timesheet.hours > 1 else ''
+      plural = 'hours' if timesheet.hours > 1 else 'hour'
       verb = 'is' if 0.09 < timesheet.hours < 1.01 else 'are'
-      msg = f'There {verb} only {timesheet.hours} hour{plural} logged. Submit anyway?'
+      msg = f'There {verb} only {timesheet.hours} {plural} logged. Submit anyway?'
 
     if not click.confirm(msg):
       sys.exit()
@@ -292,18 +349,7 @@ def pto():
   """
     Lists your PTO information.
   """
-  pto = api.pto()
-
-  def pl(x):
-    if 0.999 < x < 1.001:
-      return '1 hour'
-
-    return f'{x} hours'
-
-  click.echo(f'You have {pl(pto.balance)} remaining')
-  click.echo(f'You have earned {pl(pto.earned)} and used {pl(pto.used)}')
-  click.echo(f'You earn a day for every {pl(pto.accrual)}')
-  click.echo(f'You are capped at {pl(pto.cap)}')
+  check_pto(Timesheet.latest().items, full_report=True)
 
 
 @cli.command()

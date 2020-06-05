@@ -34,7 +34,7 @@ def _clear():
 def list_projects():
   if _projects is None:
     latest = Timesheet.latest()
-    latest._load_details()
+    latest.reload()
 
   return _projects
 
@@ -62,6 +62,12 @@ class Timesheet:
     self.locked = locked
 
     self._items = None
+
+  def __eq__(self, o):
+    return isinstance(o, Timesheet) and o.id == self.id
+
+  def __hash__(self):
+    return int(self.id)
 
   @classmethod
   def list(cls):
@@ -155,7 +161,7 @@ class Timesheet:
   @property
   def items(self):
     if self._items is None:
-      self._load_details()
+      self.reload()
 
     return self._items
 
@@ -164,7 +170,7 @@ class Timesheet:
       'action': 'finalize',
     }, xhr=True)
 
-  def _load_details(self):
+  def reload(self):
     global _projects
 
     r = req.get(f'/timesheet/{self.id}/')
@@ -224,7 +230,7 @@ class Timesheet:
       current_hours = sum(i.hours for i in self.items if i.date == date)
       hours = min(hours, Decimal('8.0') - current_hours)
       if hours < 0.01:
-        return
+        return current_hours
 
     to_delete = set()
     total_hours = hours
@@ -252,6 +258,8 @@ class Timesheet:
       'parent_ticket': '',
       'undefined': '',
     }, xhr=True)
+
+    return True
 
   def delete_item(self, item_id):
     req.post(f'/timesheet/{self.id}/', data={

@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from jbstime.api import Timesheet
+from jbstime.api import _clear, pto, Timesheet
 from jbstime.error import Error
 
 
@@ -35,3 +35,12 @@ def test_delete():
 
 def test_submit():
   Timesheet.latest().submit()
+
+
+def test_pto():
+  _clear()
+  pto()
+
+
+def test_hash():
+  hash(Timesheet.latest())
